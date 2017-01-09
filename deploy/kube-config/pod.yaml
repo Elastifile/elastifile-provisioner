@@ -1,0 +1,9 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: elastifile-provisioner
+spec:
+  containers:
+    - name: elastifile-provisioner
+      image: quay.io/elastifile/elastifile-provisioner
+      imagePullPolicy: Always

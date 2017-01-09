@@ -1,0 +1,11 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: elastifile
+provisioner: elastifile.com/nfs
+parameters:
+  nfsServer: "192.168.0.1"
+  restURL: "http://10.11.198.128"
+  username: "admin"
+  secretName: "elastifile-rest"
+  secretNamespace: "default"

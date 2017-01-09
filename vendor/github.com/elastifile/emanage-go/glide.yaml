@@ -1,0 +1,8 @@
+package: github.com/elastifile/emanage-go
+import:
+- package: github.com/mattn/go-colorable
+- package: github.com/pborman/uuid
+- package: gopkg.in/inconshreveable/log15.v2
+  subpackages:
+  - stack
+- package: github.com/elastifile/errors

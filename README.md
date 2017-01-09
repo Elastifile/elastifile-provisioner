@@ -1,8 +1,6 @@
-# Kubernetes dynamic volume provisioner for Elastifile
+# Kubernetes Dynamic Volume Provisioner for Elastifile
 
 `elastifile-provisioner` is an out-of-tree dynamic provisioner for Kubernetes, based on the Kubernetes Incubator's [nfs-provisioner](http://github.com/kubernetes-incubator/nfs-provisioner). It can be used to dynamically provision Kubernetes persistent volumes on an Elastifile ECFS system.
-
-## Quickstart
 
 ## Configuration
 
@@ -39,7 +37,6 @@ storageclass "elastifile" created
 Create the deployment for the provisioner:
 ```console
 $ kubectl create -f deploy/kube-config/deployment.yaml
-service "elastifile-provisioner" created
 deployment "elastifile-provisioner" created
 ```
 

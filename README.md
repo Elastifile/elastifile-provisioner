@@ -1,1 +1,1 @@
-# kubernetes-elastifile-provisioner
+# Kubernetes dynamic volume provisioner for Elastifile

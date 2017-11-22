@@ -59,3 +59,33 @@ pvc-11819eb8-d66d-11e6-a66b-005056912012   3Gi        RWX           Delete      
 ```
 
 Deleting the `PersistentVolumeClaim` will cause the provisioner to delete the `PersistentVolume` and its data.
+
+## Contributing/Developer guide:
+#### Prerequisites
+[get go](https://golang.org/doc/install)
+
+[get docker](https://docs.docker.com/engine/installation/)
+
+#### Set up the project
+To start with, we’ll need the source code for the project. It’s important that it lives inside the GOPATH, so the easiest way to grab the code is with go get: 
+```console
+go get github.com/elastifile/elastifile-provisioner
+```
+We’ll do the rest of our work from the project directory:
+```console
+cd $GOPATH/src/github.com/elastifile/elastifile-provisioner
+```
+
+#### Build
+To produce a provisioner binary:
+```console
+$ make build
+```
+To build the provisioner docker image:
+```console
+$ make container
+```
+To push the provisioner docker image:
+```console
+$ make push
+```

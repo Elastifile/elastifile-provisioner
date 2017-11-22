@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IMAGE = quay.io/elastifile/elastifile-provisioner
+IMAGE = docker.io/elastifileio/provisioner
 
 VERSION :=
 TAG := $(shell git describe --abbrev=0 --tags HEAD 2>/dev/null)

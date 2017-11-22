@@ -11,5 +11,5 @@ spec:
     spec:
       containers:
         - name: elastifile-provisioner
-          image: quay.io/elastifile/elastifile-provisioner
+          image: docker.io/elastifileio/provisioner
           imagePullPolicy: Always

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IMAGE = docker.io/elastifileio/provisioner
+IMAGE = elastifileio/provisioner
 
 VERSION :=
 TAG := $(shell git describe --abbrev=0 --tags HEAD 2>/dev/null)

@@ -44,6 +44,7 @@ fi
 
 GOROOT=/tmp/go1.9.2
 GOPATH=/tmp/gopath
+rm -rf $GOPATH
 mkdir -p $GOROOT $GOPATH
 
 install_file="go1.9.2.linux-amd64.tar.gz"
@@ -52,16 +53,16 @@ install_url="https://redirector.gvt1.com/edgedl/go/$install_file"
 if ! [ "$(command -v $GOROOT/bin/go)" ]; then
   echo "## INSTALL GO ##"
   wget $install_url
-  tar -C $GOROOT -xzf $install_url --strip 1
+  tar -C $GOROOT -xzf $install_file --strip 1
 fi
 
 export GOPATH=$GOPATH
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export GOROOT=$GOROOT
+export PATH=$GOROOT/bin:$PATH
 
 provisioner_url="github.com/elastifile/elastifile-provisioner"
 provisioner_in_gopath=$GOPATH/src/$provisioner_url
 
-rm -rf $provisioner_in_gopath
 go get $provisioner_url
 cd $provisioner_in_gopath
 

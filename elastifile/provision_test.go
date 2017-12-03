@@ -79,3 +79,14 @@ func TestConfigFromAnnotations(t *testing.T) {
 		t.Fatalf("got:\n%+v\nexpected:\n%+v\n", *conf, expected)
 	}
 }
+func TestEmanageClient(t *testing.T) {
+	conf := config{
+		EmanageURL: "https://10.11.209.216",
+		Username:   "admin",
+		Password:   "changeme",
+	}
+	_, err := getEmanage(conf)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

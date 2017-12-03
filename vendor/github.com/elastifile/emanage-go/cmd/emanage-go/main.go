@@ -19,6 +19,10 @@ func connect(opts options) (*emanage.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	if baseURL.Scheme == "" {
+		println("Didn't find Scheme in url, assuming http")
+		baseURL.Scheme = "http"
+	}
 
 	mgmt := emanage.NewClient(baseURL)
 

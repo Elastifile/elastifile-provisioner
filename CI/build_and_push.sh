@@ -67,8 +67,12 @@ go get $provisioner_url
 cd $provisioner_in_gopath
 
 git checkout $branch
-if [ $branch != "master" ]; then
-    git tag "development"
+if [ $1 == "" ]; then
+    if [ $branch != "master" ]; then
+        git tag "development"
+    fi
+else
+    git tag $1
 fi
 
 docker login -u $docker_user -p $docker_password -e $docker_email

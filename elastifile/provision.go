@@ -10,6 +10,7 @@ import (
 	"k8s.io/client-go/pkg/api/v1"
 
 	"github.com/elastifile/emanage-go/pkg/emanage"
+	"github.com/elastifile/emanage-go/pkg/optional"
 )
 
 const (
@@ -129,7 +130,8 @@ func (p *provisioner) createVolume(options controller.VolumeOptions, conf config
 	_, err = mgmt.Exports.Create(export, &emanage.ExportCreateOpts{
 		DcId:        dc.Id,
 		Path:        "/",
-		UserMapping: emanage.UserMappingNone,
+		UserMapping: emanage.UserMappingAll,
+		Uuid: optional.NewString("root"),
 	})
 	if err != nil {
 		return nil, err

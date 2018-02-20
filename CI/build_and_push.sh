@@ -50,11 +50,11 @@ mkdir -p $GOROOT $GOPATH
 install_file="go1.9.2.linux-amd64.tar.gz"
 install_url="https://redirector.gvt1.com/edgedl/go/$install_file"
 
-if ! [ "$(command -v $GOROOT/bin/go)" ]; then
+#if ! [ "$(command -v $GOROOT/bin/go)" ]; then
   echo "## INSTALL GO ##"
   wget $install_url
   tar -C $GOROOT -xzf $install_file --strip 1
-fi
+#fi
 
 export GOPATH=$GOPATH
 export GOROOT=$GOROOT

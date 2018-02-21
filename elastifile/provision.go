@@ -130,8 +130,9 @@ func (p *provisioner) createVolume(options controller.VolumeOptions, conf config
 	_, err = mgmt.Exports.Create(export, &emanage.ExportCreateOpts{
 		DcId:        dc.Id,
 		Path:        "/",
+		Access: emanage.ExportAccessRW,
 		UserMapping: emanage.UserMappingAll,
-		Uuid: optional.NewString("root"),
+		Uid : optional.NewInt(0),
 	})
 	if err != nil {
 		return nil, err

@@ -38,7 +38,7 @@ type Export struct {
 	Uuid            uuid.UUID            `json:"uuid"`
 	Access          ExportAccessModeType `json:"access_permission"`
 	UserMapping     UserMappingType      `json:"user_mapping"`
-	DataContainerId DcId                 `json:"data_container_id"`
+	DataContainerId int                 `json:"data_container_id"`
 	CreatedAt       time.Time            `json:"created_at"`
 	UpdatedAt       time.Time            `json:"updated_at"`
 	Url             eurl.URL             `json:"url"`
@@ -69,18 +69,20 @@ type ExportUpdateOpts struct {
 	Uuid        optional.String      `json:"uuid,omitempty"` // Should type be uuid.UUID? How do we handle nilable?
 	Access      ExportAccessModeType `json:"access_permission,omitempty"`
 	UserMapping UserMappingType      `json:"user_mapping,omitempty"`
-	Uid         int                  `json:"uid,omitempty"`
-	Gid         int                  `json:"gid,omitempty"`
+	Uid         optional.Int         `json:"uid,omitempty"` //changed to optional to allow o value pass
+	Gid         optional.Int         `json:"gid,omitempty"` //changed to optional to allow o value pass
 }
 
 type ExportCreateOpts struct {
-	DcId        DcId                 `json:"data_container_id"`
-	Path        string               `json:"path"`
-	Uuid        optional.String      `json:"uuid,omitempty"` // Should type be uuid.UUID? How do we handle nilable?
-	Access      ExportAccessModeType `json:"access_permission,omitempty"`
-	UserMapping UserMappingType      `json:"user_mapping,omitempty"`
-	Uid         int                  `json:"uid,omitempty"`
-	Gid         int                  `json:"gid,omitempty"`
+	DcId         int                  `json:"data_container_id,omitempty"`
+	SnapshotId   int                  `json:"snapshot_id,omitempty"`
+	Path         string               `json:"path"`
+	Uuid         optional.String      `json:"uuid,omitempty"` // Should type be uuid.UUID? How do we handle nilable?
+	Access       ExportAccessModeType `json:"access_permission,omitempty"`
+	UserMapping  UserMappingType      `json:"user_mapping,omitempty"`
+	Uid          optional.Int         `json:"uid,omitempty"` //changed to optional to allow o value pass
+	Gid          optional.Int         `json:"gid,omitempty"` //changed to optional to allow o value pass
+	SnapshotName string               `json:"-"`
 }
 
 type ExportAccessModeType string

@@ -2,7 +2,6 @@ package rest
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,7 +9,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
 	"time"
 
 	log "gopkg.in/inconshreveable/log15.v2"
@@ -19,6 +17,7 @@ import (
 	"github.com/elastifile/emanage-go/pkg/retry"
 
 	"github.com/elastifile/errors"
+	"crypto/tls"
 )
 
 var Log = log.New("package", "rest")
@@ -63,14 +62,17 @@ func NewSession(baseURL *url.URL) *Session {
 	result.init()
 	return result
 }
-
-func checkRedirect(req *http.Request, via []*http.Request) error {
-	return http.ErrUseLastResponse
-}
+//
+//func (rs *Session) init() {
+//	rs.client = http.Client{
+//		Transport: &http.Transport{DisableKeepAlives: true},
+//	}
+//}
 
 func (rs *Session) init() {
 	rs.client = http.Client{
-		CheckRedirect: checkRedirect,
+		//CheckRedirect: CheckRedirect,
+		Timeout:       Timeout,
 		Transport: &http.Transport{
 			DisableKeepAlives: true,
 			TLSClientConfig: &tls.Config{
@@ -98,21 +100,8 @@ func (rs *Session) Login(user string, password string) error {
 	}
 
 	resp, _, err := rs.requestHttp(MethodPost, sessionsUri, jsonBody)
-	if resp.StatusCode == http.StatusFound {
-		if strings.Contains(resp.Header.Get("Location"), "https://") {
-			rs.baseURL.Scheme = "https"
-			Log.Info("Received redirect status code, Changing scheme http -> https and retrying login", "status code", resp.StatusCode)
-		} else {
-			err = errors.Errorf("Failed to login", "method", MethodPost, "url", rs.baseURL, "uri", sessionsUri, "err", err)
-			Log.Error("Failed to login", "err", err)
-			return err
-		}
-		resp, _, err = rs.requestHttp(MethodPost, sessionsUri, jsonBody)
-		if err != nil {
-			Log.Error("Failed to login", "method", MethodPost, "url", rs.baseURL, "uri", sessionsUri, "err", err)
-			return err
-		}
-		Log.Info("logged-in", "method", MethodPost, "url", rs.baseURL, "uri", sessionsUri)
+	if err != nil {
+		return err
 	}
 
 	rs.cookies = resp.Cookies()

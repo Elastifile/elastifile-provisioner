@@ -19,20 +19,29 @@ type dataContainers struct {
 }
 
 type DataContainer struct {
-	Id             DcId      `json:"id"`
+	parent         dataContainers
+	Id             int       `json:"id"`
 	Name           string    `json:"name"`
 	Uuid           uuid.UUID `json:"uuid"`
 	Used           Bytes     `json:"used_capacity"`
 	Scope          string    `json:"namespace_scope"`
+	DataType       string    `json:"data_type"`
 	Policy         Policy    `json:"policy"`
 	PolicyId       uint      `json:"policy_id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Url            eurl.URL  `json:"url"`
 	Exports        []Export  `json:"exports"`
+	ExportsCount   int       `json:"exports_count"`
 	SoftQuota      Bytes     `json:"soft_quota"`
 	HardQuota      Bytes     `json:"hard_quota"`
 	DirPermissions int       `json:"dir_permissions,omitempty"`
+	Dedup          int       `json:"dedup,omitempty"`
+	Compression    int       `json:"compression,omitempty"`
+	DirUID         int       `json:"dir_uid"`
+	DirGid         int       `json:"dir_gid"`
+	TenantID       int       `json:"tenant_id"`
+	TotalUsedBytes Bytes `json:"total_used_bytes"`
 }
 
 type DcGetAllOpts struct {

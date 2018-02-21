@@ -7,10 +7,11 @@ usage() {
     echo -e "\t-p docker password"
     echo -e "\t-e docker email"
     echo -e "\t-b git branch"
+    echo -e "\t-t git tag"
     echo -e "\t-h print this help message"
 }
 
-while getopts ":hu:p:e:b:" opt; do
+while getopts ":hu:p:e:b:t:" opt; do
   case $opt in
     u)
       docker_user=$OPTARG
@@ -23,6 +24,9 @@ while getopts ":hu:p:e:b:" opt; do
       ;;
     b)
       branch=$OPTARG
+      ;;
+    t)
+      tag=$OPTARG
       ;;
     h)
       usage
@@ -68,9 +72,12 @@ cd $provisioner_in_gopath
 
 git checkout $branch
 if [ $branch != "master" ]; then
-    git tag "development"
+    if [ -z $tag ]; then
+        git tag $tag
+    else
+        git tag "development"
+    fi
 fi
-
 
 docker login -u $docker_user -p $docker_password -e $docker_email
 make clean

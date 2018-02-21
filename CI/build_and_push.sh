@@ -72,8 +72,8 @@ cd $provisioner_in_gopath
 
 git checkout $branch
 if [ $branch != "master" ]; then
-    if [ -z $tag ]; then
-        git tag $tag
+    if [ -n "$tag" ]; then
+        git tag "$tag"
     else
         git tag "development"
     fi

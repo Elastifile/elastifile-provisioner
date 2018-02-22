@@ -34,6 +34,10 @@ $ kubectl create -f deploy/kube-config/storageclass.yaml
 storageclass "elastifile" created
 ```
 
+Authorization
+
+If your cluster has RBAC enabled or you are running OpenShift you must authorize the provisioner. If you are in a namespace/project other than "default" either edit deploy/auth/clusterrolebinding.yaml or edit the oadm policy command accordingly, please use thre following instructions: [Authorization](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client).
+
 Create the deployment for the provisioner:
 ```console
 $ kubectl create -f deploy/kube-config/deployment.yaml

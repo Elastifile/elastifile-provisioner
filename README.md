@@ -4,7 +4,14 @@
 
 ## Configuration
 
+```console
+git clone https://github.com/Elastifile/elastifile-provisioner.git
+$ cd elastifile-provisioner
+```
+
 Customize the Storage Class parameters in `deploy/kube-config/storageclass.yaml` to match your Elastifile setup:
+
+
 
 ```yaml
 kind: StorageClass
@@ -24,19 +31,25 @@ Create a Kubernetes secret with your Elastifile password:
 
 ```console
 $ echo -n "changeme" > password.txt
-$ kubectl create secret generic elastifile-rest --from-file=password.txt
+$ kubectl create secret generic elastifile-rest --from-file=password.txt -n default
 secret "elastifile-rest" created
 ```
 
 Create the Storage Class that you configured above:
 ```console
-$ kubectl create -f deploy/kube-config/storageclass.yaml
+$ kubectl create -f deploy/kube-config/storageclass.yaml -n default
 storageclass "elastifile" created
 ```
 
-Authorization
-
-If your cluster has RBAC enabled or you are running OpenShift you must authorize the provisioner. If you are in a namespace/project other than "default" either edit deploy/auth/clusterrolebinding.yaml or edit the oadm policy command accordingly, please use thre following instructions: [Authorization](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client).
+### RBAC 
+```console
+$ kubectl create -f deploy/kube-config/serviceaccount.yaml -n default
+serviceaccount "elastifile-provisioner" created
+$ kubectl create -f deploy/kube-config/clusterrole.yaml -n default
+clusterrole "elastifile-provisioner-runner" created
+$ kubectl create -f deploy/kube-config/clusterrolebinding.yaml -n default
+clusterrolebinding "elastifile-provisioner" created
+```
 
 Create the deployment for the provisioner:
 ```console
@@ -44,8 +57,28 @@ $ kubectl create -f deploy/kube-config/deployment.yaml
 deployment "elastifile-provisioner" created
 ```
 
-Create a `PersistentVolumeClaim` with annotation `volume.beta.kubernetes.io/storage-class: "elastifile"`.
+$ kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
+
+### OpenShift
+```console
+$ oc create -f deploy/kube-config/serviceaccount.yaml -n default
+serviceaccount "elastifile-provisioner" created
+$ oc create -f deploy/kube-config/openshift-clusterrole.yaml -n default
+clusterrole "elastifile-provisioner-runner" created
+$ oadm policy add-scc-to-user hostmount-anyuid system:serviceaccount:default:elastifile-provisioner
+$ oadm policy add-cluster-role-to-user nfs-client-provisioner-runner system:serviceaccount:default:nfs-client-provisioner
+$ oc patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
+```
+
+
+
+
+### Elastifile provisioner validation  
+To validate the configuration please Create a `PersistentVolumeClaim` with annotation `volume.beta.kubernetes.io/storage-class: "elastifile"`.
 You may want to modify the `storage` size and/or the `accessModes`:
+
+### Example :
+
 ```console
 $ kubectl create -f deploy/kube-config/pvc.yaml
 persistentvolumeclaim "elasti1" created
@@ -53,6 +86,9 @@ persistentvolumeclaim "elasti1" created
 
 A `PersistentVolume` is provisioned for the `PersistentVolumeClaim`. Now the claim can be consumed by some pod(s) and the backing Elastifile storage read from or written to.
 ```console
+
+
+
 $ kubectl get pvc
 NAME      STATUS    VOLUME                                     CAPACITY   ACCESSMODES   AGE
 elasti1   Bound     pvc-11819eb8-d66d-11e6-a66b-005056912012   3Gi        RWX           7s

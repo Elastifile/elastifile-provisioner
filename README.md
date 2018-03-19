@@ -56,6 +56,8 @@ Create the deployment for the provisioner:
 $ kubectl create -f deploy/kube-config/deployment.yaml
 deployment "elastifile-provisioner" created
 ```
+Patch the deployment 
+
 ```console
 $ kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
 ```

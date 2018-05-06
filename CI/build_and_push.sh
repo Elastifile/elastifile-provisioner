@@ -60,7 +60,7 @@ export GOPATH=$GOPATH
 export GOROOT=$GOROOT
 export PATH=$GOROOT/bin:$PATH
 
-provisioner_url="github.com/elastifile/elastifile-provisioner"
+provisioner_url="git@github.com/Elastifile/elastifile-provisioner"
 provisioner_in_gopath=$GOPATH/src/$provisioner_url
 
 go get $provisioner_url

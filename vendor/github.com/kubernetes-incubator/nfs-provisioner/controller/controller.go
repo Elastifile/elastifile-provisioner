@@ -696,12 +696,20 @@ func (ctrl *ProvisionController) scheduleOperation(operationName string, operati
 }
 
 func (ctrl *ProvisionController) getStorageClass(name string) (*v1beta1.StorageClass, error) {
+
+	const defaultStorageClass = "elastifile"
 	classObj, found, err := ctrl.classes.GetByKey(name)
 	if err != nil {
 		return nil, fmt.Errorf("Error getting StorageClass %q: %v", name, err)
 	}
 	if !found {
-		return nil, fmt.Errorf("StorageClass %q not found", name)
+		classObj, found, err = ctrl.classes.GetByKey(defaultStorageClass)
+		if err != nil {
+			return nil, fmt.Errorf("Error getting %v StorageClass %q: %v", defaultStorageClass,name, err)
+		}
+		if !found {
+			return nil, fmt.Errorf("StorageClass %q not found", defaultStorageClass)
+		}
 		// 3. It tries to find a StorageClass instance referenced by annotation
 		//    `claim.Annotations["volume.beta.kubernetes.io/storage-class"]`. If not
 		//    found, it SHOULD report an error (by sending an event to the claim) and it

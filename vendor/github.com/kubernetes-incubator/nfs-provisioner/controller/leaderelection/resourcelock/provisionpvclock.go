@@ -23,6 +23,7 @@ import (
 
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
+	"github.com/golang/glog"
 )
 
 type ProvisionPVCLock struct {
@@ -67,8 +68,9 @@ func (pl *ProvisionPVCLock) Update(ler LeaderElectionRecord) error {
 	if err != nil {
 		return err
 	}
+	glog.Infof("AAAAAAAAAAAAAAAAAAA  recordBytes: %v" , recordBytes )
 	pl.p.Annotations[LeaderElectionRecordAnnotationKey] = string(recordBytes)
-	pl.p, err = pl.Client.Core().PersistentVolumeClaims(pl.PVCMeta.Namespace).Update(pl.p)
+	//pl.p, err = pl.Client.Core().PersistentVolumeClaims(pl.PVCMeta.Namespace).Update(pl.p)
 	return err
 }
 

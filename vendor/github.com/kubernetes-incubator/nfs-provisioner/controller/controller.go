@@ -250,7 +250,7 @@ func (ctrl *ProvisionController) Run(stopCh <-chan struct{}) {
 // On add claim, check if the added claim should have a volume provisioned for
 // it and provision one if so.
 func (ctrl *ProvisionController) addClaim(obj interface{}) {
-	glog.Info("addClaim", addClaim, obj)
+	glog.Info("addClaim", obj)
 	claim, ok := obj.(*v1.PersistentVolumeClaim)
 	if !ok {
 		glog.Errorf("Expected PersistentVolumeClaim but addClaim received %+v", obj)
@@ -279,7 +279,7 @@ func (ctrl *ProvisionController) addClaim(obj interface{}) {
 // On update claim, pass the new claim to addClaim. Updates occur at least every
 // resyncPeriod.
 func (ctrl *ProvisionController) updateClaim(oldObj, newObj interface{}) {
-	glog.Info("updateClaim", addClaim, obj)
+	glog.Info("updateClaim", "oldObj", oldObj, "newOb", newObj)
 	ctrl.addClaim(newObj)
 }
 

@@ -169,38 +169,38 @@ func (p *provisioner) Delete(pv *v1.PersistentVolume) error {
 	}
 
 	glog.Infof("Going to delete Elastifile Data Container '%v'", name)
-	mgmt, err := getEmanage(*conf)
-	if err != nil {
-		return err
-	}
+	//mgmt, err := getEmanage(*conf)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//dcs, err := mgmt.DataContainers.GetAll(nil)
+	//if err != nil {
+	//	return err
+	//}
 
-	dcs, err := mgmt.DataContainers.GetAll(nil)
-	if err != nil {
-		return err
-	}
-
-	found := false
-	for _, dc := range dcs {
-		if dc.Name == name {
-			if err := deleteAllExports(mgmt, dc); err != nil {
-				return err
-			}
-
-			if _, err := mgmt.DataContainers.Delete(&dc); err != nil {
-				return err
-			}
-
-			glog.Infof("Deleted Elastifile Data Container '%v'", name)
-
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return fmt.Errorf("no such Data Container: '%v'", name)
-	}
-
+//	found := false
+//	for _, dc := range dcs {
+//		if dc.Name == name {
+//			if err := deleteAllExports(mgmt, dc); err != nil {
+//				return err
+//			}
+//
+//			if _, err := mgmt.DataContainers.Delete(&dc); err != nil {
+//				return err
+//			}
+//
+//			glog.Infof("Deleted Elastifile Data Container '%v'", name)
+//
+//			found = true
+//			break
+//		}
+//	}
+//
+//	if !found {
+//		return fmt.Errorf("no such Data Container: '%v'", name)
+//	}
+//
 	return nil
 }
 

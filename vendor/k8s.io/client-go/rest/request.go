@@ -858,7 +858,7 @@ func (r *Request) request(fn func(*http.Request, *http.Response)) error {
 //  * http.Client.Do errors are returned directly.
 func (r *Request) Do() Result {
 	r.tryThrottle()
-	fmt.Println("req", r)
+	fmt.Println("req", *r)
 	var result Result
 	err := r.request(func(req *http.Request, resp *http.Response) {
 		result = r.transformResponse(resp, req)

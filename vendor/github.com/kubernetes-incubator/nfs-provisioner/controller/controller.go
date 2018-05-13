@@ -355,8 +355,15 @@ func (ctrl *ProvisionController) shouldDelete(volume *v1.PersistentVolume) bool 
 // LeaderElector to instead race for the leadership (lock), where only the
 // leader is tasked with provisioning & may try to do so
 func (ctrl *ProvisionController) lockProvisionClaimOperation(claim *v1.PersistentVolumeClaim) {
+	glog.Infof("CCCCCCCCCCCCCCCCCC - setting pv lock with copy")
+	// only use the name and namespace (drop annotations due to issue when setting storageclass programmatically)
+	pvcMeta := v1.ObjectMeta{
+		Name:                       claim.ObjectMeta.Name,
+		Namespace:                  claim.ObjectMeta.Namespace,
+	}
+
 	rl := rl.ProvisionPVCLock{
-		PVCMeta: claim.ObjectMeta,
+		PVCMeta: pvcMeta,
 		Client:  ctrl.client,
 		LockConfig: rl.ResourceLockConfig{
 			Identity:      string(ctrl.identity),

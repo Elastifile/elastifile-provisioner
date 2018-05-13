@@ -742,7 +742,7 @@ func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 		return class
 	}
 
-	return ""
+	return "elastifile"
 }
 
 func claimToClaimKey(claim *v1.PersistentVolumeClaim) string {

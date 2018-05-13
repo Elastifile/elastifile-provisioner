@@ -21,7 +21,7 @@ func connect(opts options) (*emanage.Client, error) {
 	}
 
 	mgmt := emanage.NewClient(baseURL)
-
+	fmt.Println("baseURL", baseURL)
 	err = mgmt.Sessions.Login(opts.Username, opts.Password)
 	return mgmt, err
 }

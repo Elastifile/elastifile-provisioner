@@ -31,7 +31,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"elastifile-provisioner/elastifile"
+	"github.com/elastifile/elastifile-provisioner/elastifile"
 	"fmt"
 )
 

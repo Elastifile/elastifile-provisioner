@@ -79,6 +79,7 @@ func (c *persistentVolumeClaims) Update(persistentVolumeClaim *v1.PersistentVolu
 		Body(persistentVolumeClaim).
 		Do().
 		Into(result)
+		fmt.Println(result)
 	return
 }
 

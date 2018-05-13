@@ -370,6 +370,9 @@ func (ctrl *ProvisionController) lockProvisionClaimOperation(claim *v1.Persisten
 			EventRecorder: ctrl.eventRecorder,
 		},
 	}
+
+	glog.Infof("CCCCCCCCCCCCCCCCCC - after set pvcmeta")
+
 	le, err := leaderelection.NewLeaderElector(leaderelection.LeaderElectionConfig{
 		Lock:          &rl,
 		LeaseDuration: ctrl.leaseDuration,

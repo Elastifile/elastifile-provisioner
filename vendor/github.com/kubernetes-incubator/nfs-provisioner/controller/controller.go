@@ -250,6 +250,7 @@ func (ctrl *ProvisionController) Run(stopCh <-chan struct{}) {
 // On add claim, check if the added claim should have a volume provisioned for
 // it and provision one if so.
 func (ctrl *ProvisionController) addClaim(obj interface{}) {
+	glog.Info("addClaim", addClaim, obj)
 	claim, ok := obj.(*v1.PersistentVolumeClaim)
 	if !ok {
 		glog.Errorf("Expected PersistentVolumeClaim but addClaim received %+v", obj)
@@ -278,6 +279,7 @@ func (ctrl *ProvisionController) addClaim(obj interface{}) {
 // On update claim, pass the new claim to addClaim. Updates occur at least every
 // resyncPeriod.
 func (ctrl *ProvisionController) updateClaim(oldObj, newObj interface{}) {
+	glog.Info("updateClaim", addClaim, obj)
 	ctrl.addClaim(newObj)
 }
 
@@ -429,6 +431,7 @@ func (ctrl *ProvisionController) lockProvisionClaimOperation(claim *v1.Persisten
 func (ctrl *ProvisionController) provisionClaimOperation(claim *v1.PersistentVolumeClaim) error {
 	// Most code here is identical to that found in controller.go of kube's PV controller...
 	claimClass := getClaimClass(claim)
+	glog.Infof("provisionClaimOperation [%s] started, class: %q", claimToClaimKey(claim), claimClass)
 	glog.V(4).Infof("provisionClaimOperation [%s] started, class: %q", claimToClaimKey(claim), claimClass)
 
 	//  A previous doProvisionClaim may just have finished while we were waiting for
@@ -750,6 +753,7 @@ func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 	// TODO: change to PersistentVolumeClaim.Spec.Class value when this
 	// attribute is introduced.
 	if class, found := claim.Annotations[annClass]; found {
+		glog.Info("class", class)
 		return class
 	}
 

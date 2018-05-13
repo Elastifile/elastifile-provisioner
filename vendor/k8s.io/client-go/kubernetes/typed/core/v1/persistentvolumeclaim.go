@@ -80,7 +80,8 @@ func (c *persistentVolumeClaims) Update(persistentVolumeClaim *v1.PersistentVolu
 		Body(persistentVolumeClaim).
 		Do().
 		Into(result)
-		fmt.Println(result)
+		fmt.Println("res", result)
+		fmt.Println("err", err)
 	return
 }
 

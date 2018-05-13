@@ -268,7 +268,7 @@ func (le *LeaderElector) tryAcquireOrRenew() bool {
 	} else {
 		leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions + 1
 	}
-
+	glog.Info("liran", leaderElectionRecord)
 	// update the lock itself
 	if err = le.config.Lock.Update(leaderElectionRecord); err != nil {
 		glog.Errorf("Failed to update lock: %v", err)

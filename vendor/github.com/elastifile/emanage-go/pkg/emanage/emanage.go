@@ -53,6 +53,8 @@ func EmanageURL(host string) *url.URL {
 }
 
 func NewClient(baseURL *url.URL) *Client {
+	fmt.Println("baseURL", baseURL)
+
 	s := rest.NewSession(baseURL)
 	return &Client{
 		ClusterReports:    &clusterReports{s},

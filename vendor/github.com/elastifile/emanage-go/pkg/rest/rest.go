@@ -59,6 +59,8 @@ func NewSession(baseURL *url.URL) *Session {
 	result := &Session{
 		baseURL: baseURL,
 	}
+	fmt.Println("baseURL", baseURL)
+
 	result.init()
 	return result
 }

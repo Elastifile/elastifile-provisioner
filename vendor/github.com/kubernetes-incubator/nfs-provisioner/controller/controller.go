@@ -468,6 +468,7 @@ func (ctrl *ProvisionController) provisionClaimOperation(claim *v1.PersistentVol
 	volume.Spec.ClaimRef = claimRef
 
 	setAnnotation(&volume.ObjectMeta, annDynamicallyProvisioned, ctrl.provisionerName)
+	glog.Infof("BBBBBBBBBBBBBBBBBB - set claim class: %v ", claimClass)
 	setAnnotation(&volume.ObjectMeta, annClass, claimClass)
 
 	// Try to create the PV object several times

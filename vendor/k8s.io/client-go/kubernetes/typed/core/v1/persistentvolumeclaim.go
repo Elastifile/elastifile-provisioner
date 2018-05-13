@@ -73,13 +73,8 @@ func (c *persistentVolumeClaims) Create(persistentVolumeClaim *v1.PersistentVolu
 // Update takes the representation of a persistentVolumeClaim and updates it. Returns the server's representation of the persistentVolumeClaim, and an error, if there is any.
 func (c *persistentVolumeClaims) Update(persistentVolumeClaim *v1.PersistentVolumeClaim) (result *v1.PersistentVolumeClaim, err error) {
 	result = &v1.PersistentVolumeClaim{}
-	err = c.client.Put().
-		Namespace(c.ns).
-		Resource("persistentvolumeclaims").
-		Name(persistentVolumeClaim.Name).
-		Body(persistentVolumeClaim).
-		Do().
-		Into(result)
+	fmt.Println("name", persistentVolumeClaim.Name)
+	err = c.client.Put().Namespace(c.ns).Resource("persistentvolumeclaims").Name(persistentVolumeClaim.Name).Body(persistentVolumeClaim).Do().Into(result)
 		fmt.Println("res", result)
 		fmt.Println("err", err)
 	return

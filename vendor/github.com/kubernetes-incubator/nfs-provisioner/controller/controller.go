@@ -708,6 +708,7 @@ func (ctrl *ProvisionController) scheduleOperation(operationName string, operati
 }
 
 func (ctrl *ProvisionController) getStorageClass(name string) (*v1beta1.StorageClass, error) {
+	fmt.Println("key-name", name)
 	classObj, found, err := ctrl.classes.GetByKey(name)
 	if err != nil {
 		return nil, fmt.Errorf("Error getting StorageClass %q: %v", name, err)

@@ -30,47 +30,47 @@ parameters:
 Create a Kubernetes secret with your Elastifile password:
 
 ```console
-$ echo -n "changeme" > password.txt
-$ kubectl create secret generic elastifile-rest --from-file=password.txt -n default
+echo -n "changeme" > password.txt
+kubectl create secret generic elastifile-rest --from-file=password.txt -n default
 secret "elastifile-rest" created
 ```
 
 Create the Storage Class that you configured above:
 ```console
-$ kubectl create -f deploy/kube-config/storageclass.yaml -n default
+kubectl create -f deploy/kube-config/storageclass.yaml -n default
 storageclass "elastifile" created
 ```
 
 ### RBAC 
 ```console
-$ kubectl create -f deploy/kube-config/serviceaccount.yaml -n default
+kubectl create -f deploy/kube-config/serviceaccount.yaml -n default
 serviceaccount "elastifile-provisioner" created
-$ kubectl create -f deploy/kube-config/clusterrole.yaml -n default
+kubectl create -f deploy/kube-config/clusterrole.yaml -n default
 clusterrole "elastifile-provisioner-runner" created
-$ kubectl create -f deploy/kube-config/clusterrolebinding.yaml -n default
+kubectl create -f deploy/kube-config/clusterrolebinding.yaml -n default
 clusterrolebinding "elastifile-provisioner" created
 ```
 
 Create the deployment for the provisioner:
 ```console
-$ kubectl create -f deploy/kube-config/deployment.yaml
+kubectl create -f deploy/kube-config/deployment.yaml
 deployment "elastifile-provisioner" created
 ```
 Patch the deployment 
 
 ```console
-$ kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
+kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
 ```
 
 ### OpenShift
 ```console
-$ oc create -f deploy/kube-config/serviceaccount.yaml -n default
+oc create -f deploy/kube-config/serviceaccount.yaml -n default
 serviceaccount "elastifile-provisioner" created
-$ oc create -f deploy/kube-config/openshift-clusterrole.yaml -n default
+oc create -f deploy/kube-config/openshift-clusterrole.yaml -n default
 clusterrole "elastifile-provisioner-runner" created
-$ oadm policy add-scc-to-user hostmount-anyuid system:serviceaccount:default:elastifile-provisioner
-$ oadm policy add-cluster-role-to-user nfs-client-provisioner-runner system:serviceaccount:default:nfs-client-provisioner
-$ oc patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
+oadm policy add-scc-to-user hostmount-anyuid system:serviceaccount:default:elastifile-provisioner
+oadm policy add-cluster-role-to-user elastifile-provisioner-runner system:serviceaccount:default:elastifile-provisioner
+oc patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
 ```
 
 
@@ -83,7 +83,7 @@ You may want to modify the `storage` size and/or the `accessModes`:
 ### Example :
 
 ```console
-$ kubectl create -f deploy/kube-config/pvc.yaml
+kubectl create -f deploy/kube-config/pvc.yaml
 persistentvolumeclaim "elasti1" created
 ```
 
@@ -92,7 +92,7 @@ A `PersistentVolume` is provisioned for the `PersistentVolumeClaim`. Now the cla
 
 
 
-$ kubectl get pvc
+kubectl get pvc
 NAME      STATUS    VOLUME                                     CAPACITY   ACCESSMODES   AGE
 elasti1   Bound     pvc-11819eb8-d66d-11e6-a66b-005056912012   3Gi        RWX           7s
 

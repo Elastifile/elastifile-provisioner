@@ -64,7 +64,6 @@ func main() {
 	if err != nil {
 		glog.Fatalf("Failed to create config: %v", err)
 	}
-	fmt.Printf("LLLLLLLLLLLLLLLLLL - config: %#v\n", config)
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		glog.Fatalf("Failed to create client: %v", err)

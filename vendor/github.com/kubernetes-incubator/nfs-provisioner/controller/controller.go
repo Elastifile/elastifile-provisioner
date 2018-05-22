@@ -749,7 +749,7 @@ func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 		return class
 	}
 
-	return "elastifile.com/nfs"
+	return "elastifile"
 }
 
 func claimToClaimKey(claim *v1.PersistentVolumeClaim) string {

@@ -32,7 +32,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/elastifile/elastifile-provisioner/elastifile"
-	"fmt"
 )
 
 const provisionerName = "elastifile.com/nfs"

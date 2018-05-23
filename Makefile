@@ -23,20 +23,20 @@ else
     ifeq ($(COMMIT), $(shell git rev-list -n1 $(TAG)))
         VERSION := $(TAG)
     else
-        VERSION := latest
+        VERSION := development
     endif
 endif
 
 all build:
-	GOOS=linux CGO_ENABLED=0 go install -v ./cmd/nfs-provisioner
-	GOOS=linux CGO_ENABLED=0 go build ./cmd/nfs-provisioner
+	GOOS=linux go install -v ./cmd/nfs-provisioner
+	GOOS=linux go build ./cmd/nfs-provisioner
 .PHONY: all build
 
 container: build quick-container
 .PHONY: container
 
 quick-container:
-	cp elastifile-provisioner deploy/docker/elastifile-provisioner
+	cp nfs-provisioner deploy/docker/elastifile-provisioner
 	docker build -t $(IMAGE):$(VERSION) deploy/docker
 .PHONY: quick-container
 
@@ -57,6 +57,6 @@ verify-gofmt:
 .PHONY: verify-gofmt
 
 clean:
-	rm -f elastifile-provisioner
+	rm -f nfs-provisioner
 	rm -f deploy/docker/elastifile-provisioner
 .PHONY: clean

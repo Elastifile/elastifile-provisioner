@@ -26,7 +26,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	vol "github.com/elastifile/elastifile-provisioner/pkg/volume"
-	"github.com/elastifile/elastifile-provisioner/pkg/server"
 
 	"github.com/elastifile/elastifile-provisioner/controller"
 
@@ -72,47 +71,24 @@ const (
 	retryPeriod   = leaderelection.DefaultRetryPeriod
 	renewDeadline = leaderelection.DefaultRenewDeadline
 	termLimit     = leaderelection.DefaultTermLimit
+	provisionerName = "elastifile.com/nfs"
 )
 
-func main() {
 
+func main() {
 	glog.Info("Starting hybrid provisioner")
 	flag.Set("logtostderr", "true")
 	flag.Parse()
 
-	if errs := validateProvisioner(*provisioner, field.NewPath("provisioner")); len(errs) != 0 {
+	if errs := validateProvisioner(provisionerName, field.NewPath("provisioner")); len(errs) != 0 {
 		glog.Fatalf("Invalid provisioner specified: %v", errs)
 	}
-	glog.Infof("Provisioner %s specified", *provisioner)
-
-	if *runServer && !*useGanesha {
-		glog.Fatalf("Invalid flags specified: if run-server is true, use-ganesha must also be true.")
-	}
-
-	if *gracePeriod != 90 && (!*runServer || !*useGanesha) {
-		glog.Fatalf("Invalid flags specified: custom grace period can only be set if both run-server and use-ganesha are true.")
-	} else if *gracePeriod > 180 && *runServer && *useGanesha {
-		glog.Fatalf("Invalid flags specified: custom grace period must be in the range 0-180")
-	}
+	glog.Infof("Provisioner %s specified", provisionerName)
 
 	// Create the client according to whether we are running in or out-of-cluster
-	outOfCluster := *master != "" || *kubeconfig != ""
-
-	if !outOfCluster && *serverHostname != "" {
-		glog.Fatalf("Invalid flags specified: if server-hostname is set, either master or kube-config must also be set.")
-	}
-
-	if *runServer {
-		glog.Infof("Starting NFS server!")
-		err := server.Start(ganeshaConfig, *gracePeriod)
-		if err != nil {
-			glog.Fatalf("Error starting NFS server: %v", err)
-		}
-	}
-
 	var config *rest.Config
 	var err error
-	if outOfCluster {
+	if *master != "" || *kubeconfig != "" {
 		config, err = clientcmd.BuildConfigFromFlags(*master, *kubeconfig)
 	} else {
 		config, err = rest.InClusterConfig()
@@ -134,12 +110,83 @@ func main() {
 
 	// Create the provisioner: it implements the Provisioner interface expected by
 	// the controller
-	nfsProvisioner := vol.NewNFSProvisioner(exportDir, clientset, outOfCluster, *useGanesha, ganeshaConfig, *rootSquash, *enableXfsQuota, *serverHostname)
+	nfsProvisioner := vol.NewProvisioner(clientset)
 
 	// Start the provision controller which will dynamically provision NFS PVs
-	pc := controller.NewProvisionController(clientset, 15*time.Second, *provisioner, nfsProvisioner, serverVersion.GitVersion, false, *failedRetryThreshold, leasePeriod, renewDeadline, retryPeriod, termLimit)
+	pc := controller.NewProvisionController(clientset, 15*time.Second, provisionerName, nfsProvisioner, serverVersion.GitVersion, false, *failedRetryThreshold, leasePeriod, renewDeadline, retryPeriod, termLimit)
 	pc.Run(wait.NeverStop)
+
+		//pc := controller.NewProvisionController(clientset, 15*time.Second, *provisioner, nfsProvisioner, serverVersion.GitVersion, false, *failedRetryThreshold, leasePeriod, renewDeadline, retryPeriod, termLimit)
+		//pc.Run(wait.NeverStop)
+
 }
+
+//func main() {
+//
+//	glog.Info("Starting hybrid provisioner")
+//	flag.Set("logtostderr", "true")
+//	flag.Parse()
+//
+//	if errs := validateProvisioner(*provisioner, field.NewPath("provisioner")); len(errs) != 0 {
+//		glog.Fatalf("Invalid provisioner specified: %v", errs)
+//	}
+//	glog.Infof("Provisioner %s specified", *provisioner)
+//
+//	if *runServer && !*useGanesha {
+//		glog.Fatalf("Invalid flags specified: if run-server is true, use-ganesha must also be true.")
+//	}
+//
+//	if *gracePeriod != 90 && (!*runServer || !*useGanesha) {
+//		glog.Fatalf("Invalid flags specified: custom grace period can only be set if both run-server and use-ganesha are true.")
+//	} else if *gracePeriod > 180 && *runServer && *useGanesha {
+//		glog.Fatalf("Invalid flags specified: custom grace period must be in the range 0-180")
+//	}
+//
+//	// Create the client according to whether we are running in or out-of-cluster
+//	outOfCluster := *master != "" || *kubeconfig != ""
+//
+//	if !outOfCluster && *serverHostname != "" {
+//		glog.Fatalf("Invalid flags specified: if server-hostname is set, either master or kube-config must also be set.")
+//	}
+//
+//	if *runServer {
+//		glog.Infof("Starting NFS server!")
+//		err := server.Start(ganeshaConfig, *gracePeriod)
+//		if err != nil {
+//			glog.Fatalf("Error starting NFS server: %v", err)
+//		}
+//	}
+//
+//	var config *rest.Config
+//	var err error
+//	if outOfCluster {
+//		config, err = clientcmd.BuildConfigFromFlags(*master, *kubeconfig)
+//	} else {
+//		config, err = rest.InClusterConfig()
+//	}
+//	if err != nil {
+//		glog.Fatalf("Failed to create config: %v", err)
+//	}
+//	clientset, err := kubernetes.NewForConfig(config)
+//	if err != nil {
+//		glog.Fatalf("Failed to create client: %v", err)
+//	}
+//
+//	// The controller needs to know what the server version is because out-of-tree
+//	// provisioners aren't officially supported until 1.5
+//	serverVersion, err := clientset.Discovery().ServerVersion()
+//	if err != nil {
+//		glog.Fatalf("Error getting server version: %v", err)
+//	}
+//
+//	// Create the provisioner: it implements the Provisioner interface expected by
+//	// the controller
+//	nfsProvisioner := vol.NewProvisioner()
+//
+//	// Start the provision controller which will dynamically provision NFS PVs
+//	pc := controller.NewProvisionController(clientset, 15*time.Second, *provisioner, nfsProvisioner, serverVersion.GitVersion, false, *failedRetryThreshold, leasePeriod, renewDeadline, retryPeriod, termLimit)
+//	pc.Run(wait.NeverStop)
+//}
 
 // validateProvisioner tests if provisioner is a valid qualified name.
 // https://github.com/kubernetes/kubernetes/blob/release-1.4/pkg/apis/storage/validation/validation.go

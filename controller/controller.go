@@ -25,8 +25,8 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"github.com/kubernetes-incubator/nfs-provisioner/controller/leaderelection"
-	rl "github.com/kubernetes-incubator/nfs-provisioner/controller/leaderelection/resourcelock"
+	"github.com/elastifile/elastifile-provisioner/controller/leaderelection"
+	rl "github.com/elastifile/elastifile-provisioner/controller/leaderelection/resourcelock"
 	"k8s.io/client-go/kubernetes"
 	core_v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/pkg/api"

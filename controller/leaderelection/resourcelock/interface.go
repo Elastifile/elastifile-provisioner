@@ -17,7 +17,9 @@ limitations under the License.
 package resourcelock
 
 import (
-	"k8s.io/client-go/pkg/api/unversioned"
+	unver "k8s.io/client-go/pkg/api/unversioned"
+	//unver "github.com/elastifile/elastifile-provisioner/pkg/unversioned"
+
 	"k8s.io/client-go/tools/record"
 )
 
@@ -32,8 +34,8 @@ const (
 type LeaderElectionRecord struct {
 	HolderIdentity       string           `json:"holderIdentity"`
 	LeaseDurationSeconds int              `json:"leaseDurationSeconds"`
-	AcquireTime          unversioned.Time `json:"acquireTime"`
-	RenewTime            unversioned.Time `json:"renewTime"`
+	AcquireTime          unver.Time `json:"acquireTime"`
+	RenewTime            unver.Time `json:"renewTime"`
 	LeaderTransitions    int              `json:"leaderTransitions"`
 }
 

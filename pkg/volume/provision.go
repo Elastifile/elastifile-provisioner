@@ -16,6 +16,7 @@ limitations under the License.
 
 package volume
 
+
 import (
 	"fmt"
 	"io/ioutil"
@@ -28,7 +29,7 @@ import (
 	"syscall"
 
 	"github.com/golang/glog"
-	"github.com/kubernetes-incubator/nfs-provisioner/controller"
+	"github.com/elastifile/elastifile-provisioner/controller"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/resource"
 	"k8s.io/client-go/pkg/api/v1"

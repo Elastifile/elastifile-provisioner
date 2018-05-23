@@ -1,0 +1,29 @@
+* [31mb957ca8[m -[33m (HEAD, itfresh)[m wip [32m(32 minutes ago) [1;34mAdam Gluck[m
+* [31md7fe483[m -[33m (origin/itfresh)[m string record bytes [32m(4 days ago) [1;34madam.gluck@elastifile.com[m
+* [31m546d150[m -[33m[m dont do update [32m(4 days ago) [1;34madam.gluck@elastifile.com[m
+* [31mf339f72[m -[33m[m add default storage class [32m(4 days ago) [1;34madam.gluck@elastifile.com[m
+* [31m7bf4de9[m -[33m (origin/master, origin/HEAD, master)[m Update README.md [32m(8 weeks ago) [1;34melasti-ronenc[m
+* [31m3df30be[m -[33m[m Update README.md [32m(8 weeks ago) [1;34melasti-ronenc[m
+* [31m928ecc4[m -[33m[m Update README.md [32m(8 weeks ago) [1;34melasti-ronenc[m
+* [31m95327ce[m -[33m[m service account update [32m(8 weeks ago) [1;34melasti-ronenc[m
+*   [31m36ef35c[m -[33m[m Merge pull request #1 from elasti-ronenc/patch-2 [32m(3 months ago) [1;34melasti-ronenc[m
+[32m|[m[33m\[m  
+[32m|[m * [31mb799df2[m -[33m[m Update README.md [32m(3 months ago) [1;34melasti-ronenc[m
+[32m|[m[32m/[m  
+* [31m2fddc58[m -[33m[m TESLA-2514:fix.broken.build.script [32m(3 months ago) [1;34mAdam Gluck[m
+* [31mbe5d746[m -[33m (origin/yonir/master/_TESLA-2237_sshSupport, origin/dev)[m support tag name in docker ci push [32m(5 months ago) [1;34mYoni Resnick[m
+* [31m076b10f[m -[33m[m https support in emanage [32m(5 months ago) [1;34mYoni Resnick[m
+* [31ma90a175[m -[33m (origin/fixProvisioner)[m Makefile: add CGO_ENABLED=0 to ensure statically compiled (without dynamic linking) [32m(6 months ago) [1;34mErez Horev[m
+* [31mb40bcc0[m -[33m[m CI/build_and_push.sh: fix GOROOT [32m(6 months ago) [1;34mErez Horev[m
+* [31m28a946d[m -[33m[m Added CI/build_and_push.sh [32m(6 months ago) [1;34mErez Horev[m
+* [31m7314a1d[m -[33m[m Update docker image url [32m(6 months ago) [1;34mErez Horev[m
+* [31m69a2bdb[m -[33m[m Update README.md: added developer guide [32m(6 months ago) [1;34mErez Horev[m
+* [31m829c253[m -[33m[m Update README.md [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31m4ca968d[m -[33m[m Update README and yaml files [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31mc744f9b[m -[33m[m Initial version of Elastifile provisioner [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31mcf9a81a[m -[33m[m vendor: Add nfs-provisioner [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31ma45d86f[m -[33m[m vendor: Import emanage-go and its dependencies [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31md2eb331[m -[33m[m vendor: Copy dependencies from nfs-provisioner [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31m0223893[m -[33m[m Add gitignore [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31m38bebbc[m -[33m[m Add Makefile and deploy files from nfs-provisioner [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m
+* [31m632e4db[m -[33m[m first commit [32m(1 year, 4 months ago) [1;34mGavrie Philipson[m

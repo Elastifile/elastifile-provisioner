@@ -897,10 +897,12 @@ func setAnnotation(obj *v1.ObjectMeta, ann string, value string) {
 func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 	// TODO: change to PersistentVolumeClaim.Spec.Class value when this
 	// attribute is introduced.
+	fmt.Println(claim)
+	fmt.Println(claim.Annotations)
 	if class, found := claim.Annotations[annClass]; found {
 		return class
 	}
-
+	panic("claim not found")
 	return ""
 }
 

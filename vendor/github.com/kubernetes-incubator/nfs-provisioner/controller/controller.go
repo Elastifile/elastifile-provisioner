@@ -818,7 +818,7 @@ func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 
 	glog.Info("HACK - Returning empty string")
 
-	return ""
+	return "elastifile"
 }
 
 func claimToClaimKey(claim *v1.PersistentVolumeClaim) string {

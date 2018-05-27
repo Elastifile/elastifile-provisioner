@@ -25,6 +25,8 @@ import (
 	"k8s.io/client-go/pkg/api/v1"
 )
 
+const annClass = "volume.beta.kubernetes.io/storage-class"
+
 type ProvisionPVCLock struct {
 	// PVCMeta should contain a Name and a Namespace of a PVC
 	// object that the LeaderElector will attempt to lead.
@@ -66,6 +68,11 @@ func (pl *ProvisionPVCLock) Update(ler LeaderElectionRecord) error {
 	recordBytes, err := json.Marshal(ler)
 	if err != nil {
 		return err
+	}
+	// HACK - if there's no explicit storage class in the annotations,
+	// add elastifile to the pvc spec. (we are using default storageclass)
+	if _, found := pl.p.Annotations[annClass]; !found {
+		pl.p.Spec.StorageClassName = "elastifile"
 	}
 	pl.p.Annotations[LeaderElectionRecordAnnotationKey] = string(recordBytes)
 	pl.p, err = pl.Client.Core().PersistentVolumeClaims(pl.PVCMeta.Namespace).Update(pl.p)

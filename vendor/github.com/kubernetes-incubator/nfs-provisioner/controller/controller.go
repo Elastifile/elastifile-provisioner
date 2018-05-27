@@ -302,7 +302,12 @@ func (ctrl *ProvisionController) shouldProvision(claim *v1.PersistentVolumeClaim
 	if claim.Spec.VolumeName != "" {
 		return false
 	}
-
+	// HACK - set storage class to elastifile if it isnt.
+	// For case where default storage class is used
+	_, found, err := ctrl.classes.GetByKey(annClass)
+	if !found {
+		setAnnotation(&claim.ObjectMeta, annClass, "elastifile")
+	}
 	// Kubernetes 1.5 provisioning with annDynamicallyProvisioned
 	if provisioner, found := claim.Annotations[annDynamicallyProvisioned]; found {
 		if provisioner == ctrl.provisionerName {
@@ -313,7 +318,7 @@ func (ctrl *ProvisionController) shouldProvision(claim *v1.PersistentVolumeClaim
 
 	// Kubernetes 1.4 provisioning, evaluating class.Provisioner
 	claimClass := getClaimClass(claim)
-	_, err := ctrl.getStorageClass(claimClass)
+	_, err = ctrl.getStorageClass(claimClass)
 	if err != nil {
 		glog.Errorf("Claim %q: %v", claimToClaimKey(claim), err)
 		return false
@@ -738,10 +743,11 @@ func setAnnotation(obj *v1.ObjectMeta, ann string, value string) {
 func getClaimClass(claim *v1.PersistentVolumeClaim) string {
 	// TODO: change to PersistentVolumeClaim.Spec.Class value when this
 	// attribute is introduced.
+	// try find explicit storage class in pvc
 	if class, found := claim.Annotations[annClass]; found {
 		return class
-	}
 
+	}
 	return ""
 }
 

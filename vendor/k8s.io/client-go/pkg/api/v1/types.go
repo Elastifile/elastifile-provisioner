@@ -557,6 +557,8 @@ type PersistentVolumeClaimSpec struct {
 	// VolumeName is the binding reference to the PersistentVolume backing this claim.
 	// +optional
 	VolumeName string `json:"volumeName,omitempty" protobuf:"bytes,3,opt,name=volumeName"`
+
+	StorageClassName string `json:"storageClassName,omitempty" protobuf:"bytes,2,opt,name=storageClassName"`
 }
 
 // PersistentVolumeClaimStatus is the current status of a persistent volume claim.

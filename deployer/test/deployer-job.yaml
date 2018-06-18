@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elastifile-provisioner-deployer
+spec:
+  template:
+    metadata:
+      name: elastifile-provisioner-deployer
+    spec:
+      serviceAccountName: elastifile-provisioner-deployer-sa
+      containers:
+      - name: elastifile-provisioner-deployer
+        image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer:latest
+        volumeMounts:
+        - name: config-volume
+      restartPolicy: Never

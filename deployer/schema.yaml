@@ -1,0 +1,47 @@
+properties:
+  name:
+    type: string
+    x-google-marketplace:
+     type: NAME
+  namespace:
+    type: string
+    x-google-marketplace:
+      type: NAMESPACE
+  imageProvisioner:
+    type: string
+    default: $REGISTRY/provisioner:$TAG
+    default_example: docker.io/elastifileio/provisioner
+    x-google-marketplace:
+      type: IMAGE
+  emanageAddress:
+    title: Elastifile Management Console Address
+    description: DNS name / IP address for access to the Elastifile management console
+    type: string
+    maxLength: 128
+    default: 'https://emanage.example.com'
+  nfsAddress:
+    title: NFS Address
+    description: DNS name / IP address for storage access
+    type: string
+    maxLength: 128
+  emanageUser:
+    title: Username
+    description: Username for logging into the Elastifile management console
+    type: string
+    default: 'admin'
+    maxLength: 64
+  emanagePassword:
+    title: Password
+    description: Password for logging into the Elastifile management console
+    type: string
+    maxLength: 64
+    default: 'changeme'
+required:
+- name
+- namespace
+- imageProvisioner
+- emanageAddress
+- nfsAddress
+- emanageUser
+- emanagePassword
+

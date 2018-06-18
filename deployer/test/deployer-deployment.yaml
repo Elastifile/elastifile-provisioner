@@ -1,0 +1,15 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: elastifile-provisioner-deployer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elastifile-provisioner-deployer
+    spec:
+      containers:
+        - name: elastifile-provisioner-deployer
+          image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer:latest
+          imagePullPolicy: Always

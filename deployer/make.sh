@@ -7,8 +7,8 @@ source functions.sh
 # Customizable values
 #PROJECT=elastifile-gce-lab-c304
 PROJECT=launcher-poc-207208
-TAG=latest
 DOCKER_FILE=Dockerfile
+TAG=latest
 REGISTRY=docker.io/elastifileio
 
 if [ -n "$1" ]; then
@@ -21,14 +21,14 @@ fi
 
 # Static values
 IMAGE=elastifile-provisioner-deployer
-
-logme "Building "$DOCKER_FILE" and tagging the image as gcr.io/$PROJECT/$IMAGE:$TAG"
-IMAGE_TAGGED=gcr.io/$PROJECT/$IMAGE:$TAG
+STAGING_CONTAINER_REGISTRY=gcr.io/$PROJECT
+IMAGE_TAGGED=$STAGING_CONTAINER_REGISTRY/$IMAGE:$TAG
+logme "Building "$DOCKER_FILE" and tagging the image as $IMAGE_TAGGED"
 exec_cmd docker build -t $IMAGE_TAGGED --build-arg REGISTRY=$REGISTRY --build-arg TAG=$TAG . -f $DOCKER_FILE
 logme Pushing $IMAGE_TAGGED
 exec_cmd docker push $IMAGE_TAGGED
 logme Listing available images
-exec_cmd gcloud container images list --repository=gcr.io/$PROJECT
+exec_cmd gcloud container images list --repository=$STAGING_CONTAINER_REGISTRY
 
 echo In order to free up the disk space:
 echo gcloud container images delete $IMAGE_TAGGED

@@ -4,8 +4,8 @@ metadata:
   name: elastifile
 provisioner: elastifile.com/nfs
 parameters:
-  nfsServer: "nfsaddr"
-  restURL: "https://managementaddr"
-  username: "admin"
+  nfsServer: $nfsAddress
+  restURL: $emanageAddress
+  username: $emanageUser
   secretName: "elastifile-rest"
   secretNamespace: "default"

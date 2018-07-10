@@ -36,6 +36,7 @@ properties:
     type: string
     maxLength: 64
     default: 'changeme'
+
 required:
 - name
 - namespace

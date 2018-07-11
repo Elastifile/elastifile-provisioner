@@ -1,14 +1,12 @@
 kind: Job
 apiVersion: batch/v1
 metadata:
-  name: $name-deployer-custom-script
+  name: $name-custom-script-deployer
 spec:
   template:
     metadata:
       name: elastifile-provisioner-deployer
     spec:
-#      serviceAccountName: elastifile-provisioner-deployer-sa
-#      serviceAccountName: $serviceAccount
       serviceAccount: $serviceAccount
       containers:
       - name: elastifile-provisioner-deployer
@@ -22,5 +20,5 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            # ConfigMap name
             name: $name-deployer-config
+  backoffLimit: 1

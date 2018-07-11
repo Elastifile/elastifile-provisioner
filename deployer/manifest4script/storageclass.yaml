@@ -2,7 +2,7 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
   name: elastifile
-# We're not running in env_subst here
+# Can only work with env_subst
 #  labels:
 #    app.k8s.io/name: $name
 provisioner: elastifile.com/nfs

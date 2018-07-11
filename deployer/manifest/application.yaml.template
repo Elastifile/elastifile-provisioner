@@ -39,12 +39,3 @@ spec:
   - group: v1
     kind: Service
   notes: |-
-    # Updating Elastifile Password
-    
-    Before being able to use the Elastifile Provisioner for K8s, 
-    you may need to run the following command to update the password:
-
-    ```
-    kubectl create secret generic elastifile-rest --from-literal='password.txt=YOURPASSWORD'
-    ```
-

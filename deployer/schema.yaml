@@ -14,11 +14,11 @@ properties:
     x-google-marketplace:
       type: IMAGE
   emanageAddress:
-    title: Elastifile Management Console Address
-    description: DNS name / IP address for access to the Elastifile management console
+    title: Elastifile Management Console URL
+    description: URL for access to the Elastifile management console (begins with https://)
     type: string
     maxLength: 128
-    default: 'https://emanage.example.com'
+    default: 'https://elastifile-management.example.com'
   nfsAddress:
     title: NFS Address
     description: DNS name / IP address for storage access
@@ -43,9 +43,6 @@ properties:
       type: SERVICE_ACCOUNT
       serviceAccount:
         roles:
-#        - type: ClusterRole
-#          rulesType: PREDEFINED
-#          rulesFromRoleName: clusteradmin
         - type: ClusterRole
           rulesType: CUSTOM
           rules:
@@ -58,32 +55,12 @@ properties:
             - apiGroups: ["storage.k8s.io"]
               resources: ["storageclasses"]
               verbs: ["*"]
-#              verbs: ["get", "list", "watch", "create"]
             - apiGroups: [""]
               resources: ["events"]
               verbs: ["list", "watch", "create", "update", "patch"]
             - apiGroups: [""]
               resources: ["secrets"]
               verbs: ["get", "list", "watch", "create", "delete"]
-
-#  elastifileStorageClass:
-#    type: string
-#    x-google-marketplace:
-#      type: STORAGE_CLASS
-#      storageClass:
-#        type: elastifile
-
-
-
-#provisioner: elastifile.com/nfs
-#parameters:
-#  nfsServer: $nfsAddress
-#  restURL: $emanageAddress
-#  username: $emanageUser
-#  secretName: "elastifile-rest"
-#  secretNamespace: "default"
-
-
 required:
 - name
 - namespace
@@ -92,4 +69,3 @@ required:
 - nfsAddress
 - emanageUser
 - emanagePassword
-

@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: elasti1
+  name: testpvc
   annotations:
     volume.beta.kubernetes.io/storage-class: "elastifile"
 spec:

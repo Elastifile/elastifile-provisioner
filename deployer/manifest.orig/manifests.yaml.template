@@ -1,21 +1,4 @@
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
-metadata:
-  name: elastifile
-provisioner: elastifile.com/nfs
-parameters:
-  nfsServer: $nfsAddress
-  restURL: $emanageAddress
-  username: $emanageUser
-  secretName: "elastifile-rest"
-  secretNamespace: $namespace
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: elastifile-provisioner
----
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:

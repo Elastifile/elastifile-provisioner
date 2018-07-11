@@ -1,10 +1,10 @@
-#/bin/bash
+#!/usr/bin/env bash
 
 # Current script name
 MYNAME=$(basename $0)
 MYPATH=$(dirname $0)
 # Directory where deployment files are found
-DEPLOYDIR=/tmp
+DEPLOYDIR=/tmp/manifest4script
 # Name is derived from the app name
 CONFIGMAP=elastifile-provisioner-deployer-config
 # Dir is set in deployment YAML (mountPath)
@@ -54,12 +54,12 @@ function deploy_provisioner {
         echo "WARNING: DRY RUN"
         CUSTOM_FLAGS="--dry-run"
     fi
+    #assert_run_cmd kubectl create -f $DEPLOYDIR/serviceaccount.yaml -n $NAMESPACE $CUSTOM_FLAGS
     assert_run_cmd kubectl create -f $DEPLOYDIR/storageclass.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    assert_run_cmd kubectl create -f $DEPLOYDIR/serviceaccount.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrole.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrolebinding.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    assert_run_cmd kubectl create -f $DEPLOYDIR/deployment.yaml $CUSTOM_FLAGS
-    assert_run_cmd kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
+    #assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrole.yaml -n $NAMESPACE $CUSTOM_FLAGS
+    #assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrolebinding.yaml -n $NAMESPACE $CUSTOM_FLAGS
+    #assert_run_cmd kubectl create -f $DEPLOYDIR/deployment.yaml $CUSTOM_FLAGS
+    #assert_run_cmd kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
     assert_run_cmd kubectl create secret generic elastifile-rest --from-literal="password.txt=$ECFS_PASS"
 }
 

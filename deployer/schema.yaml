@@ -36,6 +36,53 @@ properties:
     type: string
     maxLength: 64
     default: 'changeme'
+  serviceAccount:
+    type: string
+    default: elastifile-provisioner-sa
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        roles:
+#        - type: ClusterRole
+#          rulesType: PREDEFINED
+#          rulesFromRoleName: clusteradmin
+        - type: ClusterRole
+          rulesType: CUSTOM
+          rules:
+            - apiGroups: [""]
+              resources: ["persistentvolumes"]
+              verbs: ["get", "list", "watch", "create", "delete"]
+            - apiGroups: [""]
+              resources: ["persistentvolumeclaims"]
+              verbs: ["get", "list", "watch", "update"]
+            - apiGroups: ["storage.k8s.io"]
+              resources: ["storageclasses"]
+              verbs: ["*"]
+#              verbs: ["get", "list", "watch", "create"]
+            - apiGroups: [""]
+              resources: ["events"]
+              verbs: ["list", "watch", "create", "update", "patch"]
+            - apiGroups: [""]
+              resources: ["secrets"]
+              verbs: ["get", "list", "watch", "create", "delete"]
+
+#  elastifileStorageClass:
+#    type: string
+#    x-google-marketplace:
+#      type: STORAGE_CLASS
+#      storageClass:
+#        type: elastifile
+
+
+
+#provisioner: elastifile.com/nfs
+#parameters:
+#  nfsServer: $nfsAddress
+#  restURL: $emanageAddress
+#  username: $emanageUser
+#  secretName: "elastifile-rest"
+#  secretNamespace: "default"
+
 
 required:
 - name

@@ -13,6 +13,8 @@ RUN cat /tmp/schema.yaml | env -i "REGISTRY=$REGISTRY" "TAG=$TAG" envsubst > /tm
 FROM gcr.io/cloud-marketplace-tools/k8s/deployer_envsubst
 
 COPY manifest /data/manifest
-COPY apptest/deployer /data-test/
+COPY manifest4script /tmp/manifest4script
+COPY *.sh /tmp/
+#COPY apptest/deployer /data-test/
 COPY --from=build /tmp/schema.yaml /data/
 

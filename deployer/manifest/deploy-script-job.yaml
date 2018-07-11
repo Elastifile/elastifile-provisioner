@@ -1,17 +1,24 @@
-apiVersion: batch/v1
 kind: Job
+apiVersion: batch/v1
 metadata:
-  name: elastifile-provisioner-deployer
+  name: $name-custom-script-deployer
 spec:
   template:
     metadata:
       name: elastifile-provisioner-deployer
     spec:
-#      serviceAccountName: elastifile-provisioner-deployer-sa
-      serviceAccount: elastifile-provisioner-deployer-sa
+      serviceAccount: $serviceAccount
       containers:
       - name: elastifile-provisioner-deployer
         image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer:latest
+        command: ["/bin/bash"]
+        args: ["-c", "/tmp/deploy.sh"]
         volumeMounts:
         - name: config-volume
+          mountPath: /etc/config
       restartPolicy: Never
+      volumes:
+        - name: config-volume
+          configMap:
+            name: $name-deployer-config
+  backoffLimit: 1

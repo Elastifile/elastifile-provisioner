@@ -2,10 +2,13 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
   name: elastifile
+# Can only work with env_subst
+#  labels:
+#    app.k8s.io/name: $name
 provisioner: elastifile.com/nfs
 parameters:
   nfsServer: $nfsAddress
   restURL: $emanageAddress
   username: $emanageUser
   secretName: "elastifile-rest"
-  secretNamespace: "default"
+  secretNamespace: $namespace

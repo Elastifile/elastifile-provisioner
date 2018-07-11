@@ -1,0 +1,14 @@
+#properties:
+#  serviceAccount:
+#    type: string
+#    x-google-marketplace:
+#      type: SERVICE_ACCOUNT
+#  password:
+#    type: string
+#    title: Password from something
+#    description: abcdef
+#  jobImage:
+#    type: string
+#    default: gcr.io/elastifile-dev-project/elastifile/job:3.5
+#    x-google-marketplace:
+#      type: IMAGE

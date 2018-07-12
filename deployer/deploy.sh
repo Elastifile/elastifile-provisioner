@@ -54,6 +54,7 @@ function deploy_provisioner {
         echo "WARNING: DRY RUN"
         CUSTOM_FLAGS="--dry-run"
     fi
+
     #assert_run_cmd kubectl create -f $DEPLOYDIR/serviceaccount.yaml -n $NAMESPACE $CUSTOM_FLAGS
     assert_run_cmd kubectl create -f $DEPLOYDIR/storageclass.yaml -n $NAMESPACE $CUSTOM_FLAGS
     #assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrole.yaml -n $NAMESPACE $CUSTOM_FLAGS
@@ -100,12 +101,15 @@ while true; do
 done
 
 if [ "$DESTROY" != true ]; then
-    # Fetch user input from configMap
+    # Fetch user input (and other settings) from configMap
+    APPNAME=$(get_file_conf name)
+    assert $? "Failed getting NAMESPACE"
     NAMESPACE=$(get_file_conf namespace)
     #assert $? "Failed getting NAMESPACE"
     NFS_ADDR=$(get_file_conf nfsAddress)
     assert $? "Failed getting nfsAddress"
-    EMS_ADDR=$(get_file_conf emanageAddress)
+    # TODO: Rename emanageAddress to emanageUrl
+    EMS_URL=$(get_file_conf emanageAddress)
     assert $? "Failed getting emanageAddress"
     ECFS_USER=$(get_file_conf emanageUser)
     assert $? "Failed getting emanageUser"
@@ -127,25 +131,27 @@ if [ -z $NAMESPACE ]; then
     NAMESPACE=default
 fi
 
-# Update the configuration
-if [ -n "$NAMESPACE" ]; then
-    log_info "Updating YAML files with namespace: $NAMESPACE"
-    sed -ie "s/^\\(\s*namespace:\s*\\)default/\\1$NAMESPACE/" $DEPLOYDIR/clusterrolebinding.yaml
-    sed -ie "s/^\\(\s*secretNamespace:\s*\\).*/\\1\"$NAMESPACE\"/" $DEPLOYDIR/storageclass.yaml
-fi
-if [ -n "$NFS_ADDR" ]; then
-    log_info "Updating YAML files with NFS Server: $NFS_ADDR"
-    sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" $DEPLOYDIR/storageclass.yaml
-fi
-if [ -n "$EMS_ADDR" ]; then
-    EMS_URL="https:\\/\\/$EMS_ADDR"
-    log_info "Updating YAML files with eManage URL: $EMS_URL"
-    sed -ie "s/^\\(\s*restURL:\s*\\).*/\\1\"$EMS_URL\"/" $DEPLOYDIR/storageclass.yaml
-fi
-if [ -n "$ECFS_USER" ]; then
-    log_info "Updating YAML files with username: $ECFS_USER"
-    sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" $DEPLOYDIR/storageclass.yaml
-fi
+# Update the configuration (check if switching to kubectl patch is a viable alternative)
+APP_UID=$(kubectl get "applications/$APPNAME" --namespace="$NAMESPACE" --output=jsonpath='{.metadata.uid}')
+APP_API_VERSION=$(kubectl get "applications/$APPNAME" --namespace="$NAMESPACE" --output=jsonpath='{.apiVersion}')
+
+YAML_FILE=$DEPLOYDIR/storageclass.yaml
+# TODO: Convert YAML update to function
+log_info "Setting app_uid $APP_UID in $YAML_FILE"
+sed -ie "s/\$namespace/$NAMESPACE/" $YAML_FILE
+log_info "Setting app_api_version to $APP_API_VERSION in $YAML_FILE"
+sed -ie "s/\$app_api_version\b/$APP_API_VERSION/" $YAML_FILE
+log_info "Setting name to $APPNAME in $YAML_FILE"
+sed -ie "s/\$name\b/$APPNAME/" $YAML_FILE
+log_info "Setting app_uid to $APP_UID in $YAML_FILE"
+sed -ie "s/\$app_uid/$APP_UID/" $YAML_FILE
+log_info "Setting nfsServer to $NFS_ADDR in $YAML_FILE"
+sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" $YAML_FILE
+# TODO: Check that the URL starts with "https://"
+log_info "Setting restURL to $EMS_URL in $YAML_FILE"
+sed -ie "s/^\\(\s*restURL:\s*\\).*/\\1\"$EMS_URL\"/" $YAML_FILE
+log_info "Setting username to $ECFS_USER in $YAML_FILE"
+sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" $YAML_FILE
 
 # Deploy/destroy provisioner
 if [ ! "$DESTROY" = true ]; then 

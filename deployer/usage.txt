@@ -1,0 +1,3 @@
+Run make.sh <project name>
+Edit test/create_app.sh and update the relevant values in --parameters
+Run test/create_app.sh

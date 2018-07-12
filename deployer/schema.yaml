@@ -9,13 +9,13 @@ properties:
       type: NAMESPACE
   imageProvisioner:
     type: string
+    #default: docker.io/elastifileio/provisioner:1.0
     default: $REGISTRY/provisioner:$TAG
-    default_example: docker.io/elastifileio/provisioner
     x-google-marketplace:
       type: IMAGE
   emanageAddress:
     title: Elastifile Management Console URL
-    description: URL for access to the Elastifile management console (begins with https://)
+    description: URL for access to the Elastifile management console (should start with https://)
     type: string
     maxLength: 128
     default: 'https://elastifile-management.example.com'
@@ -61,8 +61,8 @@ properties:
             - apiGroups: [""]
               resources: ["secrets"]
               verbs: ["get", "list", "watch", "create", "delete"]
-            - apiGroups: ["app.k8s.io"] # Required for garbage collection
-              resources: ["applications"]
+            - apiGroups: ["app.k8s.io"]
+              resources: ["applications"] # Required for garbage collection
               verbs: ["get", "list", "watch"]
 required:
 - name

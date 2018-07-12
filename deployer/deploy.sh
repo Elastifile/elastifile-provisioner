@@ -5,10 +5,10 @@ MYNAME=$(basename $0)
 MYPATH=$(dirname $0)
 # Directory where deployment files are found
 DEPLOYDIR=/tmp/manifest4script
-# Name is derived from the app name
-CONFIGMAP=elastifile-provisioner-deployer-config
 # Dir is set in deployment YAML (mountPath)
 CONFIGDIR=/etc/config
+# Name is derived from the app name
+CONFIGMAP=elastifile-provisioner-deployer-config
 
 function log_info {
     echo "INFO: $*"
@@ -19,12 +19,12 @@ function log_error {
 }
 
 function get_file_conf {
-    FNAME=$CONFIGDIR/$1
+    FNAME=${CONFIGDIR}/$1
     if [ ! -f "$FNAME" ]; then
         log_error "File $FNAME doesn't exist"
         exit 11
     fi
-    cat $FNAME
+    cat ${FNAME}
 }
 
 function assert {
@@ -33,7 +33,7 @@ function assert {
     local desc="$*"
     if [ "$error" -ne 0 ]; then
         log_error "$desc"
-        exit $error
+        exit ${error}
     fi
 }
 
@@ -44,34 +44,61 @@ function run_cmd {
 
 function assert_run_cmd {
     run_cmd $@
-    assert $? "Command failed with exit code $exitcode: $@"
+    assert $? "Command failed with exit code $?: $@"
 }
 
 function deploy_provisioner {
     log_info "Deploying ECFS provisioner"
-    CUSTOM_FLAGS=""
+    DRY_RUN_FLAG=""
     if [ "$DRY_RUN" = true ]; then
-        echo "WARNING: DRY RUN"
-        CUSTOM_FLAGS="--dry-run"
+        log_info "WARNING: DRY RUN"
+        DRY_RUN_FLAG="--dry-run"
     fi
 
-    #assert_run_cmd kubectl create -f $DEPLOYDIR/serviceaccount.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    assert_run_cmd kubectl create -f $DEPLOYDIR/storageclass.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    #assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrole.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    #assert_run_cmd kubectl create -f $DEPLOYDIR/clusterrolebinding.yaml -n $NAMESPACE $CUSTOM_FLAGS
-    #assert_run_cmd kubectl create -f $DEPLOYDIR/deployment.yaml $CUSTOM_FLAGS
-    #assert_run_cmd kubectl patch deployment elastifile-provisioner -p '{"spec":{"template":{"spec":{"serviceAccount":"elastifile-provisioner"}}}}'
-    assert_run_cmd kubectl create secret generic elastifile-rest --from-literal="password.txt=$ECFS_PASS"
+#    SECRET_PATCH=$(cat <<END_OF_SECRET_PATCH
+#    {"metadata":{"ownerReferences":[{"apiVersion":"${APP_API_VERSION}","blockOwnerDeletion":true,"kind":"Application","name":"${APP_NAME}","uid":"${APP_UID}"}]}}
+#END_OF_SECRET_PATCH
+#    )
+
+    assert_run_cmd kubectl create -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE} ${DRY_RUN_FLAG}
+
+    # TODO: Check if special characters break this
+    ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
+#    SECRET_MANIFEST=$(cat <<END_OF_SECRET_MANIFEST
+#    '{"data":{"password.txt":"${ECFS_PASS_BASE64}"},"kind":"Secret","metadata":{"name":"${APP_NAME}","namespace":"${NAMESPACE}"}}'
+#END_OF_SECRET_MANIFEST
+#    )
+#    assert_run_cmd "echo ${SECRET_MANIFEST} | kubectl create secret generic -f- ${DRY_RUN_FLAG}"
+
+    SECRET_NAME='elastifile-rest'
+    ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
+#    SECRET_MANIFEST=$(cat <<END_OF_SECRET_MANIFEST
+    cat <<END_OF_SECRET_MANIFEST | kubectl create -f - ${DRY_RUN_FLAG}
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: "${SECRET_NAME}"
+      namespace: "${NAMESPACE}"
+      ownerReferences:
+      - apiVersion: ${APP_API_VERSION}
+        blockOwnerDeletion: true
+        kind: Application
+        name: ${APP_NAME}
+        uid: ${APP_UID}
+    data:
+      password.txt: "${ECFS_PASS_BASE64}"
+END_OF_SECRET_MANIFEST
+#    )
+#    assert_run_cmd "echo -n ${SECRET_MANIFEST} | kubectl create -f - ${DRY_RUN_FLAG}"
+
+#    assert_run_cmd kubectl create secret generic elastifile-rest --from-literal="password.txt=$ECFS_PASS" ${DRY_RUN_FLAG}
+#    assert_run_cmd kubectl patch secret elastifile-rest -p \'${SECRET_PATCH}\' ${DRY_RUN_FLAG}
 }
 
 function destroy_provisioner_configuration {
     log_info "Destroying ECFS provisioner deployment"
     set -x
-    run_cmd kubectl delete -f $DEPLOYDIR/deployment.yaml
-    run_cmd kubectl delete -f $DEPLOYDIR/clusterrolebinding.yaml -n $NAMESPACE
-    run_cmd kubectl delete -f $DEPLOYDIR/clusterrole.yaml -n $NAMESPACE
-    run_cmd kubectl delete -f $DEPLOYDIR/serviceaccount.yaml -n $NAMESPACE
-    run_cmd kubectl delete -f $DEPLOYDIR/storageclass.yaml -n $NAMESPACE
+    run_cmd kubectl delete -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE}
     run_cmd kubectl delete secret elastifile-rest
     set +x
 }
@@ -80,19 +107,19 @@ DRY_RUN=false
 DESTROY=false
 KEEP_ALIVE=false
 
-OPTS=$(getopt -o dnk -n $MYNAME -- "$@")
+OPTS=$(getopt -o dnk -n ${MYNAME} -- "$@")
 if [ $? != 0 ] ; then
     log_error "Failed parsing command line arguments"
     exit 2
 fi
 
-eval set -- "$OPTS"
+eval set -- "${OPTS}"
 while true; do
   case "$1" in
     -n) DRY_RUN=true
         shift ;;
     -d) DESTROY=true
-        DEPLOYDIR=$MYPATH/config
+        DEPLOYDIR=${MYPATH}/config
         shift ;;
     -k) KEEP_ALIVE=true
         shift ;;
@@ -102,7 +129,7 @@ done
 
 if [ "$DESTROY" != true ]; then
     # Fetch user input (and other settings) from configMap
-    APPNAME=$(get_file_conf name)
+    APP_NAME=$(get_file_conf name)
     assert $? "Failed getting NAMESPACE"
     NAMESPACE=$(get_file_conf namespace)
     #assert $? "Failed getting NAMESPACE"
@@ -127,31 +154,32 @@ if [ "$DESTROY" != true ]; then
     fi
 fi
 
-if [ -z $NAMESPACE ]; then
+if [ -z ${NAMESPACE} ]; then
     NAMESPACE=default
 fi
 
-# Update the configuration (check if switching to kubectl patch is a viable alternative)
-APP_UID=$(kubectl get "applications/$APPNAME" --namespace="$NAMESPACE" --output=jsonpath='{.metadata.uid}')
-APP_API_VERSION=$(kubectl get "applications/$APPNAME" --namespace="$NAMESPACE" --output=jsonpath='{.apiVersion}')
+# Update the configuration
+APP_UID=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.metadata.uid}')
+APP_API_VERSION=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.apiVersion}') # app.k8s.io/v1alpha1
 
-YAML_FILE=$DEPLOYDIR/storageclass.yaml
+# sed is fragile - switch to env_subst as soon as storageclass and secret are supported there
+YAML_FILE=${DEPLOYDIR}/storageclass.yaml
 # TODO: Convert YAML update to function
-log_info "Setting app_uid $APP_UID in $YAML_FILE"
-sed -ie "s/\$namespace/$NAMESPACE/" $YAML_FILE
-log_info "Setting app_api_version to $APP_API_VERSION in $YAML_FILE"
-sed -ie "s/\$app_api_version\b/$APP_API_VERSION/" $YAML_FILE
-log_info "Setting name to $APPNAME in $YAML_FILE"
-sed -ie "s/\$name\b/$APPNAME/" $YAML_FILE
-log_info "Setting app_uid to $APP_UID in $YAML_FILE"
-sed -ie "s/\$app_uid/$APP_UID/" $YAML_FILE
-log_info "Setting nfsServer to $NFS_ADDR in $YAML_FILE"
-sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" $YAML_FILE
+log_info "Setting app_uid $APP_UID in ${YAML_FILE}"
+sed -ie "s/\$namespace/$NAMESPACE/" ${YAML_FILE}
+log_info "Setting app_api_version to $APP_API_VERSION in ${YAML_FILE}"
+sed -ie "s@\$app_api_version\b@$APP_API_VERSION@" ${YAML_FILE} # Special case - handle forwards slashes
+log_info "Setting name to $APP_NAME in ${YAML_FILE}"
+sed -ie "s/\$name\b/$APP_NAME/" ${YAML_FILE}
+log_info "Setting app_uid to $APP_UID in ${YAML_FILE}"
+sed -ie "s/\$app_uid/$APP_UID/" ${YAML_FILE}
+log_info "Setting nfsServer to $NFS_ADDR in ${YAML_FILE}"
+sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" ${YAML_FILE}
 # TODO: Check that the URL starts with "https://"
-log_info "Setting restURL to $EMS_URL in $YAML_FILE"
-sed -ie "s/^\\(\s*restURL:\s*\\).*/\\1\"$EMS_URL\"/" $YAML_FILE
-log_info "Setting username to $ECFS_USER in $YAML_FILE"
-sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" $YAML_FILE
+log_info "Setting restURL to $EMS_URL in ${YAML_FILE}"
+sed -ie "s@^\\(\s*restURL:\s*\\).*@\\1\"$EMS_URL\"@" ${YAML_FILE} # Special case - handle forwards slashes
+log_info "Setting username to $ECFS_USER in ${YAML_FILE}"
+sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" ${YAML_FILE}
 
 # Deploy/destroy provisioner
 if [ ! "$DESTROY" = true ]; then 

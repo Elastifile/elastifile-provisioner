@@ -3,15 +3,11 @@ apiVersion: storage.k8s.io/v1beta1
 metadata:
   name: elastifile
   ownerReferences:
-  - apiVersion: app.k8s.io/$app_api_version
+  - apiVersion: $app_api_version
     blockOwnerDeletion: true
     kind: Application
     name: $name
     uid: $app_uid
-
-# Can only work with env_subst
-#  labels:
-#    app.k8s.io/name: $name
 provisioner: elastifile.com/nfs
 parameters:
   nfsServer: $nfsAddress

@@ -7,7 +7,6 @@ spec:
     metadata:
       name: elastifile-provisioner-deployer
     spec:
-#      serviceAccountName: elastifile-provisioner-deployer-sa
       serviceAccount: elastifile-provisioner-deployer-sa
       containers:
       - name: elastifile-provisioner-deployer

@@ -13,6 +13,11 @@ properties:
     default: $REGISTRY/provisioner:$TAG
     x-google-marketplace:
       type: IMAGE
+  imageCustomScript:
+    type: string
+    default: $REGISTRY/provisioner/custom_script:$TAG
+    x-google-marketplace:
+      type: IMAGE
   emanageAddress:
     title: Elastifile Management Console URL
     description: URL for access to the Elastifile management console (should start with https://)

@@ -2,34 +2,31 @@
 
 source functions.sh
 
-# TODO: Make customizable values actually customaizable
-
-# Customizable values
-#PROJECT=elastifile-gce-lab-c304
-PROJECT=launcher-poc-207208
-DOCKER_FILE=Dockerfile
-TAG=latest
-REGISTRY=docker.io/elastifileio
-
 if [ -n "$1" ]; then
     PROJECT="$1"
 fi
 
-if [ -n "$2" ]; then
-    DOCKER_FILE="$2"
-fi
+# Customizable values
+#PROJECT=elastifile-gce-lab-c304
+PROJECT=launcher-poc-207208
+TAG=1.0
+REGISTRY=gcr.io/${PROJECT}
 
 # Static values
-IMAGE=elastifile-provisioner-deployer
-STAGING_CONTAINER_REGISTRY=gcr.io/$PROJECT
-IMAGE_TAGGED=$STAGING_CONTAINER_REGISTRY/$IMAGE:$TAG
-logme "Building "$DOCKER_FILE" and tagging the image as $IMAGE_TAGGED"
-exec_cmd docker build -t $IMAGE_TAGGED --build-arg REGISTRY=$REGISTRY --build-arg TAG=$TAG . -f $DOCKER_FILE
-logme Pushing $IMAGE_TAGGED
-exec_cmd docker push $IMAGE_TAGGED
-logme Listing available images
-exec_cmd gcloud container images list --repository=$STAGING_CONTAINER_REGISTRY
+APP_IMAGE_NAME=provisioner
+DEPLOYER_IMAGE_TAGGED=${REGISTRY}/${APP_IMAGE_NAME}/deployer:${TAG}
+IMAGE_CLONE_TAGGED=${REGISTRY}/${APP_IMAGE_NAME}/custom_script:${TAG} # Fake image used to run deploy.sh
 
-echo In order to free up the disk space:
-echo gcloud container images delete $IMAGE_TAGGED
+logme "Building and tagging the deployer image as ${DEPLOYER_IMAGE_TAGGED}"
+exec_cmd docker build -t ${DEPLOYER_IMAGE_TAGGED} --build-arg REGISTRY=${REGISTRY} --build-arg TAG=${TAG} .
+logme "Pushing ${DEPLOYER_IMAGE_TAGGED}"
+exec_cmd docker push ${DEPLOYER_IMAGE_TAGGED}
+logme "Tagging and pushing ${IMAGE_CLONE_TAGGED}"
+exec_cmd docker tag ${DEPLOYER_IMAGE_TAGGED} ${IMAGE_CLONE_TAGGED}
+exec_cmd docker push ${IMAGE_CLONE_TAGGED}
 
+logme "Listing available images"
+exec_cmd gcloud container images list --repository=${REGISTRY}/${APP_IMAGE_NAME}
+
+echo "In order to free up the disk space:"
+echo "gcloud container images delete ${DEPLOYER_IMAGE_TAGGED}"

@@ -55,24 +55,15 @@ function deploy_provisioner {
         DRY_RUN_FLAG="--dry-run"
     fi
 
-#    SECRET_PATCH=$(cat <<END_OF_SECRET_PATCH
-#    {"metadata":{"ownerReferences":[{"apiVersion":"${APP_API_VERSION}","blockOwnerDeletion":true,"kind":"Application","name":"${APP_NAME}","uid":"${APP_UID}"}]}}
-#END_OF_SECRET_PATCH
-#    )
-
+    log_info "Creating storageclass"
     assert_run_cmd kubectl create -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE} ${DRY_RUN_FLAG}
 
     # TODO: Check if special characters break this
     ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
-#    SECRET_MANIFEST=$(cat <<END_OF_SECRET_MANIFEST
-#    '{"data":{"password.txt":"${ECFS_PASS_BASE64}"},"kind":"Secret","metadata":{"name":"${APP_NAME}","namespace":"${NAMESPACE}"}}'
-#END_OF_SECRET_MANIFEST
-#    )
-#    assert_run_cmd "echo ${SECRET_MANIFEST} | kubectl create secret generic -f- ${DRY_RUN_FLAG}"
-
     SECRET_NAME='elastifile-rest'
+
+    log_info "Creating secret $SECRET_NAME"
     ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
-#    SECRET_MANIFEST=$(cat <<END_OF_SECRET_MANIFEST
     cat <<END_OF_SECRET_MANIFEST | kubectl create -f - ${DRY_RUN_FLAG}
     apiVersion: v1
     kind: Secret
@@ -88,11 +79,6 @@ function deploy_provisioner {
     data:
       password.txt: "${ECFS_PASS_BASE64}"
 END_OF_SECRET_MANIFEST
-#    )
-#    assert_run_cmd "echo -n ${SECRET_MANIFEST} | kubectl create -f - ${DRY_RUN_FLAG}"
-
-#    assert_run_cmd kubectl create secret generic elastifile-rest --from-literal="password.txt=$ECFS_PASS" ${DRY_RUN_FLAG}
-#    assert_run_cmd kubectl patch secret elastifile-rest -p \'${SECRET_PATCH}\' ${DRY_RUN_FLAG}
 }
 
 function destroy_provisioner_configuration {

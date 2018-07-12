@@ -7,25 +7,11 @@ spec:
   template:
     metadata:
       labels:
-        app.k8s.io/name: $name
+        app.kubernetes.io/name: $name
     spec:
       serviceAccount: $serviceAccount
       initContainers:
       containers:
         - name: elastifile-provisioner
-          image: docker.io/elastifileio/provisioner
+          image: $imageProvisioner
           imagePullPolicy: Always
-#---
-#kind: Job
-#metadata:
-#  name: elastifile-provisioner-deployer-sh
-#spec:
-#  podSpec:
-#    spec:
-#      containers:
-#      - name: storageclasscreator
-#        image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer # Can I use $deployer here?
-#        args:
-#          - /bin/bash
-#          - -c
-#          - /tmp/deploy.sh

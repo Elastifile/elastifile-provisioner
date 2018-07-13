@@ -9,8 +9,8 @@ fi
 # Customizable values
 #PROJECT=elastifile-gce-lab-c304
 PROJECT=launcher-poc-207208
-TAG=1.0
 REGISTRY=gcr.io/${PROJECT}
+TAG=1.0
 
 # Static values
 APP_IMAGE_NAME=provisioner
@@ -21,6 +21,7 @@ logme "Building and tagging the deployer image as ${DEPLOYER_IMAGE_TAGGED}"
 exec_cmd docker build -t ${DEPLOYER_IMAGE_TAGGED} --build-arg REGISTRY=${REGISTRY} --build-arg TAG=${TAG} .
 logme "Pushing ${DEPLOYER_IMAGE_TAGGED}"
 exec_cmd docker push ${DEPLOYER_IMAGE_TAGGED}
+
 logme "Tagging and pushing ${IMAGE_CLONE_TAGGED}"
 exec_cmd docker tag ${DEPLOYER_IMAGE_TAGGED} ${IMAGE_CLONE_TAGGED}
 exec_cmd docker push ${IMAGE_CLONE_TAGGED}

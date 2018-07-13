@@ -9,7 +9,6 @@ properties:
       type: NAMESPACE
   imageProvisioner:
     type: string
-    #default: docker.io/elastifileio/provisioner:1.0
     default: $REGISTRY/provisioner:$TAG
     x-google-marketplace:
       type: IMAGE
@@ -73,6 +72,7 @@ required:
 - name
 - namespace
 - imageProvisioner
+- imageCustomScript
 - emanageAddress
 - nfsAddress
 - emanageUser

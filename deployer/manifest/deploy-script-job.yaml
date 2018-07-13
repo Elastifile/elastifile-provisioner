@@ -12,11 +12,10 @@ spec:
       serviceAccount: $serviceAccount
       containers:
       - name: $name-custom-script
-#        image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer:latest
-#        image: $registry/elastifile-provisioner-deployer:$tag
         image: $imageCustomScript
         command: ["/bin/bash"]
         args: ["-c", "/tmp/deploy.sh"]
+        imagePullPolicy: Always
         volumeMounts:
         - name: config-volume
           mountPath: /etc/config

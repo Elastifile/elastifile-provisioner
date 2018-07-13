@@ -10,13 +10,7 @@ CONFIGDIR=/etc/config
 # Name is derived from the app name
 CONFIGMAP=elastifile-provisioner-deployer-config
 
-function log_info {
-    echo "INFO: $*"
-}
-
-function log_error {
-    echo "ERROR: $*" >&2
-}
+source ${MYPATH}/functions.sh
 
 function get_file_conf {
     FNAME=${CONFIGDIR}/$1
@@ -25,26 +19,6 @@ function get_file_conf {
         exit 11
     fi
     cat ${FNAME}
-}
-
-function assert {
-    local error=$1
-    shift
-    local desc="$*"
-    if [ "$error" -ne 0 ]; then
-        log_error "$desc"
-        exit ${error}
-    fi
-}
-
-function run_cmd {
-    log_info "Executing $@"
-    "$@"
-}
-
-function assert_run_cmd {
-    run_cmd $@
-    assert $? "Command failed with exit code $?: $@"
 }
 
 function deploy_provisioner {

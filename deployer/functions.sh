@@ -18,7 +18,7 @@ function log_error {
     echo "ERROR: $*" >&2
 }
 
-function exec_cmd () {
+function exec_cmd {
     cmd=$*
     logme "Executing: $cmd"
     ${cmd}

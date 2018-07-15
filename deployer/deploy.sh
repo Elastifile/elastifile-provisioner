@@ -11,6 +11,7 @@ CONFIGDIR=/etc/config
 CONFIGMAP=elastifile-provisioner-deployer-config
 
 source ${MYPATH}/functions.sh
+source ${MYPATH}/validators.sh
 
 function get_file_conf {
     FNAME=${CONFIGDIR}/$1
@@ -98,6 +99,9 @@ if [ "$DESTROY" != true ]; then
     # TODO: Rename emanageAddress to emanageUrl
     EMS_URL=$(get_file_conf emanageAddress)
     assert $? "Failed getting emanageAddress"
+    validate_https ${EMS_URL}
+    assert $? "Management URL should start with HTTPS://"
+
     ECFS_USER=$(get_file_conf emanageUser)
     assert $? "Failed getting emanageUser"
 

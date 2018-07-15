@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-APP_TOOLS_DIR=/home/jeans/Documents/workspace/gke-repos/marketplace-k8s-app-tools-0.5
+APP_TOOLS_DIR=/home/jeans/Documents/workspace/gke-repos/marketplace-k8s-app-tools
 PROJECT=launcher-poc-207208
 DEPLOYER_IMAGE=gcr.io/${PROJECT}/provisioner/deployer:1.0
 

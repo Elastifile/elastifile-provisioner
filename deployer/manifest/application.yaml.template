@@ -1,5 +1,5 @@
 ---
-apiVersion: app.k8s.io/v1alpha1
+apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
   name: "$name"
@@ -11,19 +11,21 @@ metadata:
   labels:
     app.kubernetes.io/name: "$name"
 spec:
-  type: Elastifile
-  version: '1.0'
-  description: |-
-    K8s provisioner for Elastifile - Enterprise-Grade, Scalable File Services For The Public Cloud
+  descriptor:
+    type: Elastifile
+    version: '1.0'
+    description: |-
+      K8s provisioner for Elastifile - Enterprise-Grade, Scalable File Services For The Public Cloud
 
-    # Support
-    [Elastifile Support](https://support.elastifile.com/support/home)
-  maintainers:
-  - name: Google Click to Deploy
-    url: https://cloud.google.com/solutions/#click-to-deploy
-  links:
-  - description: Elastifile Enterprise-Grade Scalable File Services
-    url: https://www.elastifile.com/
+      # Support
+      [Elastifile Support](https://support.elastifile.com/support/home)
+    maintainers:
+    - name: Google Click to Deploy
+      url: https://cloud.google.com/solutions/#click-to-deploy
+    links:
+    - description: Elastifile Enterprise-Grade Scalable File Services
+      url: https://www.elastifile.com/
+    notes: |-
   selector:
     matchLabels:
       app.kubernetes.io/name: "$name"
@@ -38,4 +40,3 @@ spec:
     kind: Secret
   - group: v1
     kind: Service
-  notes: |-

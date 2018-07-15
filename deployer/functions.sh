@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 function logme {
-    msg=$*
+    local msg=$*
     echo $(date '+%Y-%m-%d %H:%M:%S') === $msg
-    topic="script"
-    if [ -n "$MYNAME" ]; then
-        topic=$MYNAME
+    local topic="script"
+    if [ -n "${MYNAME}" ]; then
+        topic=${MYNAME}
     fi
-    logger -t $topic "$msg"
+    logger -t ${topic} "$msg"
 }
 
 function log_info {
@@ -19,15 +19,16 @@ function log_error {
 }
 
 function exec_cmd {
-    cmd=$*
-    logme "Executing: $cmd"
+    local cmd=$@
+    logme "Executing: ${cmd}"
     ${cmd}
-    rv=$?
-    if ((rv != 0)); then
-        logme "Command execution failed with exit code: $rv"
+    local res=$?
+    if ((res != 0)); then
+        logme "Command execution failed with exit code: ${res}"
     else
         logme Command executed successfully
     fi
+    return ${res}
 }
 
 function assert {

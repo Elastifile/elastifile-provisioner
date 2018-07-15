@@ -43,7 +43,6 @@ properties:
     default: 'changeme'
   serviceAccount:
     type: string
-    default: elastifile-provisioner-sa
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:

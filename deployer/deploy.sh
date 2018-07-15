@@ -31,7 +31,7 @@ function deploy_provisioner {
     fi
 
     log_info "Creating storageclass"
-    assert_run_cmd kubectl create -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE} ${DRY_RUN_FLAG}
+    assert_exec_cmd kubectl create -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE} ${DRY_RUN_FLAG}
 
     # TODO: Check if special characters break this
     ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
@@ -59,8 +59,8 @@ END_OF_SECRET_MANIFEST
 function destroy_provisioner_configuration {
     log_info "Destroying ECFS provisioner deployment"
     set -x
-    run_cmd kubectl delete -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE}
-    run_cmd kubectl delete secret elastifile-rest
+    exec_cmd kubectl delete -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE}
+    exec_cmd kubectl delete secret elastifile-rest
     set +x
 }
 

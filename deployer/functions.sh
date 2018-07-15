@@ -11,11 +11,11 @@ function logme {
 }
 
 function log_info {
-    echo "INFO: $*"
+    logme "INFO: $*"
 }
 
 function log_error {
-    echo "ERROR: $*" >&2
+    logme "ERROR: $*"
 }
 
 function exec_cmd {
@@ -40,12 +40,7 @@ function assert {
     fi
 }
 
-function run_cmd {
-    log_info "Executing $@"
-    "$@"
-}
-
-function assert_run_cmd {
-    run_cmd $@
+function assert_exec_cmd {
+    exec_cmd $@
     assert $? "Command failed with exit code $?: $@"
 }

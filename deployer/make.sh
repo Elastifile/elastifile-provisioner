@@ -4,13 +4,18 @@ source functions.sh
 
 if [ -n "$1" ]; then
     PROJECT="$1"
+else
+    PROJECT=$(gcloud config get-value project)
+fi
+
+if [ -n "$2" ]; then
+    TAG="$2"
+else
+    TAG=1.0
 fi
 
 # Customizable values
-#PROJECT=elastifile-gce-lab-c304
-PROJECT=launcher-poc-207208
 REGISTRY=gcr.io/${PROJECT}
-TAG=1.0
 
 # Static values
 APP_IMAGE_NAME=provisioner

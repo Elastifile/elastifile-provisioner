@@ -1,14 +1,12 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
 
 MYPATH=$(dirname $0)
 source ${MYPATH}/functions.sh
-source /home/jeans/Documents/workspace/elastifile-provisioner/deployer/functions.sh
 
 function string_starts_with {
     local string="$1"
     local substr="$2"
 
-    echo "Checking $string"
     shopt -s nocasematch
     case "$string" in
      $substr* ) return 0;;
@@ -25,4 +23,11 @@ function validate_https {
         log_error "'${str}' doesn't start with https:// "
     fi
     return ${res}
+}
+
+function assert_non_empty {
+    local desc="$1"
+    local value="$2"
+    [ "${value}"x != ""x ]
+    assert $? "${desc} is empty"
 }

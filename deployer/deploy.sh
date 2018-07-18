@@ -56,19 +56,10 @@ function deploy_provisioner {
 END_OF_SECRET_MANIFEST
 }
 
-function destroy_provisioner_configuration {
-    log_info "Destroying ECFS provisioner deployment"
-    set -x
-    exec_cmd kubectl delete -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE}
-    exec_cmd kubectl delete secret elastifile-rest
-    set +x
-}
-
+# Parse command line arguments
 DRY_RUN=false
-DESTROY=false
 KEEP_ALIVE=false
-
-OPTS=$(getopt -o dnk -n ${MYNAME} -- "$@")
+OPTS=$(getopt -o nk -n ${MYNAME} -- "$@")
 if [ $? != 0 ] ; then
     log_error "Failed parsing command line arguments"
     exit 2
@@ -79,81 +70,89 @@ while true; do
   case "$1" in
     -n) DRY_RUN=true
         shift ;;
-    -d) DESTROY=true
-        DEPLOYDIR=${MYPATH}/config
-        shift ;;
     -k) KEEP_ALIVE=true
         shift ;;
     *) break ;;
   esac
 done
 
-if [ "$DESTROY" != true ]; then
-    # Fetch user input (and other settings) from configMap
-    APP_NAME=$(get_file_conf name)
-    assert $? "Failed getting NAMESPACE"
-    NAMESPACE=$(get_file_conf namespace)
-    #assert $? "Failed getting NAMESPACE"
-    NFS_ADDR=$(get_file_conf nfsAddress)
-    assert $? "Failed getting nfsAddress"
-    # TODO: Rename emanageAddress to emanageUrl
-    EMS_URL=$(get_file_conf emanageAddress)
-    assert $? "Failed getting emanageAddress"
-    validate_https ${EMS_URL}
-    assert $? "Management URL should start with HTTPS://"
+# Fetch user input (and other settings) from configMap
+APP_NAME=$(get_file_conf name)
+assert $? "Failed getting APP_NAME"
+assert_non_empty APP_NAME ${APP_NAME}
 
-    ECFS_USER=$(get_file_conf emanageUser)
-    assert $? "Failed getting emanageUser"
+NAMESPACE=$(get_file_conf namespace)
+assert $? "Failed getting NAMESPACE"
+assert_non_empty NAMESPACE ${NAMESPACE}
 
-    IS_PASSWORD_BASE64=false
-    if [ "$IS_PASSWORD_BASE64" = true ]; then
-        # TODO: Use secrets to store eManage password
-        ECFS_PASS_BASE64=$(get_file_conf emanagePassword)
-        assert $? "Failed getting emanagePassword"
-        # Decode the password (if acquired from a secret)
-        ECFS_PASS=$(echo -n "$ECFS_PASS_BASE64" | base64 -d)
-    else
-        ECFS_PASS=$(get_file_conf emanagePassword)
-        assert $? "Failed getting emanagePassword"
-    fi
-fi
+NFS_ADDR=$(get_file_conf nfsAddress)
+assert $? "Failed getting nfsAddress"
+assert_non_empty NFS_ADDR ${NFS_ADDR}
+# TODO: Rename emanageAddress to emanageUrl
 
-if [ -z ${NAMESPACE} ]; then
-    NAMESPACE=default
+EMS_URL=$(get_file_conf emanageAddress)
+assert $? "Failed getting emanageAddress"
+assert_non_empty EMS_URL ${EMS_URL}
+validate_https ${EMS_URL}
+assert $? "Management URL should start with HTTPS:// - received ${EMS_URL}"
+
+ECFS_USER=$(get_file_conf emanageUser)
+assert $? "Failed getting emanageUser"
+assert_non_empty ECFS_USER ${ECFS_USER}
+
+IS_PASSWORD_BASE64=false
+if [ "$IS_PASSWORD_BASE64" = true ]; then
+    # TODO: Use secrets to store eManage password
+    ECFS_PASS_BASE64=$(get_file_conf emanagePassword)
+    assert $? "Failed getting emanagePassword"
+    # Decode the password (if acquired from a secret)
+    ECFS_PASS=$(echo -n "$ECFS_PASS_BASE64" | base64 -d)
+else
+    ECFS_PASS=$(get_file_conf emanagePassword)
+    assert $? "Failed getting emanagePassword"
 fi
 
 # Update the configuration
 APP_UID=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.metadata.uid}')
+assert $? "Failed getting APP_UID"
+assert_non_empty APP_UID ${APP_UID}
+
 APP_API_VERSION=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.apiVersion}') # app.k8s.io/v1alpha1
+assert $? "Failed getting APP_API_VERSION"
+assert_non_empty APP_API_VERSION ${APP_API_VERSION}
 
 # sed is fragile - switch to env_subst as soon as storageclass and secret are supported there
 YAML_FILE=${DEPLOYDIR}/storageclass.yaml
 # TODO: Convert YAML update to function
-log_info "Setting app_uid $APP_UID in ${YAML_FILE}"
-sed -ie "s/\$namespace/$NAMESPACE/" ${YAML_FILE}
-log_info "Setting app_api_version to $APP_API_VERSION in ${YAML_FILE}"
-sed -ie "s@\$app_api_version\b@$APP_API_VERSION@" ${YAML_FILE} # Special case - handle forwards slashes
-log_info "Setting name to $APP_NAME in ${YAML_FILE}"
-sed -ie "s/\$name\b/$APP_NAME/" ${YAML_FILE}
-log_info "Setting app_uid to $APP_UID in ${YAML_FILE}"
+
+log_info "Setting app_uid to ${APP_UID} in ${YAML_FILE}"
 sed -ie "s/\$app_uid/$APP_UID/" ${YAML_FILE}
-log_info "Setting nfsServer to $NFS_ADDR in ${YAML_FILE}"
+
+log_info "Setting namespace to ${NAMESPACE} in ${YAML_FILE}"
+sed -ie "s/\$namespace/$NAMESPACE/" ${YAML_FILE}
+
+log_info "Setting app_api_version to ${APP_API_VERSION} in ${YAML_FILE}"
+sed -ie "s@\$app_api_version\b@$APP_API_VERSION@" ${YAML_FILE} # Special case - handle forwards slashes
+
+log_info "Setting name to ${APP_NAME} in ${YAML_FILE}"
+sed -ie "s/\$name\b/$APP_NAME/" ${YAML_FILE}
+
+log_info "Setting app_uid to ${APP_UID} in ${YAML_FILE}"
+sed -ie "s/\$app_uid/$APP_UID/" ${YAML_FILE}
+
+log_info "Setting nfsServer to ${NFS_ADDR} in ${YAML_FILE}"
 sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" ${YAML_FILE}
+
 # TODO: Check that the URL starts with "https://"
-log_info "Setting restURL to $EMS_URL in ${YAML_FILE}"
+log_info "Setting restURL to ${EMS_URL} in ${YAML_FILE}"
 sed -ie "s@^\\(\s*restURL:\s*\\).*@\\1\"$EMS_URL\"@" ${YAML_FILE} # Special case - handle forwards slashes
 log_info "Setting username to $ECFS_USER in ${YAML_FILE}"
 sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" ${YAML_FILE}
 
-# Deploy/destroy provisioner
-if [ ! "$DESTROY" = true ]; then 
-    deploy_provisioner
-else
-    destroy_provisioner_configuration
-fi
+# Deploy provisioner
+deploy_provisioner
 
 echo "Deployment completed"
 while [ "$KEEP_ALIVE" = true ]; do
     sleep 1
 done
-

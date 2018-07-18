@@ -15,7 +15,7 @@ spec:
     type: Elastifile
     version: '1.0'
     description: |-
-      K8s provisioner for Elastifile - Enterprise-Grade, Scalable File Services For The Public Cloud
+      Elastifile helps organizations adapt and accelerate their business in the cloud era. Powered by a dynamically scalable, enterprise-grade distributed file system with intelligent object tiering, Elastifile’s cross-cloud data fabric solves the data-centric compatibility, scalability, and mobility challenges inhibiting cloud adoption and expansion.
 
       # Support
       [Elastifile Support](https://support.elastifile.com/support/home)
@@ -26,6 +26,35 @@ spec:
     - description: Elastifile Enterprise-Grade Scalable File Services
       url: https://www.elastifile.com/
     notes: |-
+        Once Elastifile Storage Provisioner is deployed, you're ready to create your first persistent volume on top of [Elastifile Cloud File System](https://console.cloud.google.com/marketplace/details/elastifile/elastifile-storage)
+
+        ## Create Persistent Volume Claim configuration file
+        ```
+        cat <<EOF > pvc.yaml
+        kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: demopvc
+          annotations:
+            volume.beta.kubernetes.io/storage-class: "elastifile"
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 3Gi
+        EOF
+        ```
+
+        ## Create Persistent Volume
+        ```
+        kubectl create -f pvc.yaml
+        ```
+
+        ## List Persistent Volumes
+        ```
+        kubectl get pvc
+        ```
   selector:
     matchLabels:
       app.kubernetes.io/name: "$name"

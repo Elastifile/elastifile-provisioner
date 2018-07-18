@@ -40,7 +40,6 @@ properties:
     description: Password for logging into the Elastifile management console
     type: string
     maxLength: 64
-    default: 'changeme'
   serviceAccount:
     type: string
     x-google-marketplace:

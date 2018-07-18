@@ -8,9 +8,17 @@
 #CLUSTER=gke-cluster-jean
 #ZONE=us-west1-a
 
+#PROJECT=launcher-poc-207208
+#CLUSTER=launcher-poc-cluster
+#ZONE=europe-west1-b
+
+#PROJECT=launcher-poc-207208
+#CLUSTER=cluster-2
+#ZONE=us-central1-a
+
 PROJECT=launcher-poc-207208
-CLUSTER=launcher-poc-cluster
-ZONE=europe-west1-b
+CLUSTER=cluster-tmp
+ZONE=us-central1-a
 
 set -x
 gcloud config set project $PROJECT

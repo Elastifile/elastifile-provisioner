@@ -1,24 +1,14 @@
 #!/bin/bash
 
-#PROJECT=elastifile-gce-lab-c304
-#CLUSTER=test-gke-in-same-network3
-#ZONE=europe-west1-b
+PROJECT=olegs-test2
+CLUSTER=cluster-1
+ZONE=us-east1-b
 
-#PROJECT=launcher-poc-207208
-#CLUSTER=gke-cluster-jean
-#ZONE=us-west1-a
-
-#PROJECT=launcher-poc-207208
-#CLUSTER=launcher-poc-cluster
-#ZONE=europe-west1-b
-
-#PROJECT=launcher-poc-207208
-#CLUSTER=cluster-2
-#ZONE=us-central1-a
-
-PROJECT=launcher-poc-207208
-CLUSTER=cluster-tmp
-ZONE=us-central1-a
+if [ "$1" == "poc" ]; then
+    PROJECT=launcher-poc-207208
+    CLUSTER=cluster-tmp
+    ZONE=us-central1-a
+fi
 
 set -x
 gcloud config set project $PROJECT

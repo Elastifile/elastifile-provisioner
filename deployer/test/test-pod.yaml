@@ -1,0 +1,15 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: test-pod
+spec:
+  volumes:
+    - name: test-pv-volume
+      persistentVolumeClaim:
+       claimName: test-pvc
+  containers:
+    - name: test-container
+      image: gcr.io/olegs-test2/nfs-debug
+      volumeMounts:
+        - mountPath: "/mnt"
+          name: test-pv-volume

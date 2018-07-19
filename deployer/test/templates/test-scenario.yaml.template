@@ -1,0 +1,30 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: demopvc${ID}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "elastifile"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: test-pod${ID}
+spec:
+  volumes:
+    - name: test-pv-volume${ID}
+      persistentVolumeClaim:
+       claimName: demopvc${ID}
+  containers:
+    - name: test-container${ID}
+      image: gcr.io/${PROJECT}/nfs-test
+      command: ["dd", "if=/dev/zero", "of=/mnt/test/testfile", "bs=4k", "count=100000"]
+      volumeMounts:
+        - mountPath: "/mnt/test"
+          name: test-pv-volume${ID}
+  restartPolicy: Never

@@ -41,6 +41,8 @@ properties:
     type: string
     maxLength: 64
   serviceAccount:
+    title: Service Account
+    description: It is recommended to use the adjacent "Cloud Shell" link to create a dedicated service account
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
@@ -76,3 +78,4 @@ required:
 - nfsAddress
 - emanageUser
 - emanagePassword
+- serviceAccount

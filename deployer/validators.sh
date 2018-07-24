@@ -25,9 +25,19 @@ function validate_https {
     return ${res}
 }
 
-function assert_non_empty {
-    local desc="$1"
-    local value="$2"
-    [ "${value}"x != ""x ]
-    assert $? "${desc} is empty"
+# Takes variable description and value and asserts is the latter is empty - can be used with out-of-scope values
+function assert_var_not_empty_by_val {
+    local var_desc="$1"
+    local var_value="$2"
+
+    # Here we check if the variable is non-zero after spaces are removed
+    [[ -n "${var_value## }" ]]
+    assert $? "${var_desc} is empty"
+}
+
+# Takes global variable name and asserts is the value is empty
+function assert_var_not_empty () {
+    local var_name=$1
+    local var_value=${!var_name}
+    assert_var_not_empty_by_val "Variable ${var_name}" ${var_value}
 }

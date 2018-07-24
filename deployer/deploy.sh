@@ -7,8 +7,6 @@ MYPATH=$(dirname $0)
 DEPLOYDIR=/tmp/manifest4script
 # Dir is set in deployment YAML (mountPath)
 CONFIGDIR=/etc/config
-# Name is derived from the app name
-CONFIGMAP=elastifile-provisioner-deployer-config
 
 source ${MYPATH}/functions.sh
 source ${MYPATH}/validators.sh
@@ -79,30 +77,30 @@ done
 # Fetch user input (and other settings) from configMap
 APP_NAME=$(get_file_conf name)
 assert $? "Failed getting APP_NAME"
-assert_non_empty APP_NAME ${APP_NAME}
+assert_var_not_empty APP_NAME
 
 NAMESPACE=$(get_file_conf namespace)
 assert $? "Failed getting NAMESPACE"
-assert_non_empty NAMESPACE ${NAMESPACE}
+assert_var_not_empty NAMESPACE
 
 NFS_ADDR=$(get_file_conf nfsAddress)
 assert $? "Failed getting nfsAddress"
-assert_non_empty NFS_ADDR ${NFS_ADDR}
+assert_var_not_empty NFS_ADDR
 # TODO: Rename emanageAddress to emanageUrl
 
 EMS_URL=$(get_file_conf emanageAddress)
 assert $? "Failed getting emanageAddress"
-assert_non_empty EMS_URL ${EMS_URL}
+assert_var_not_empty EMS_URL
 validate_https ${EMS_URL}
 assert $? "Management URL should start with HTTPS:// - received ${EMS_URL}"
 
 ECFS_USER=$(get_file_conf emanageUser)
 assert $? "Failed getting emanageUser"
-assert_non_empty ECFS_USER ${ECFS_USER}
+assert_var_not_empty ECFS_USER
 
 IS_PASSWORD_BASE64=false
 if [ "$IS_PASSWORD_BASE64" = true ]; then
-    # TODO: Use secrets to store eManage password
+    # TODO: Use secrets to store eManage password, once supported in the Marketplace
     ECFS_PASS_BASE64=$(get_file_conf emanagePassword)
     assert $? "Failed getting emanagePassword"
     # Decode the password (if acquired from a secret)
@@ -115,13 +113,13 @@ fi
 # Update the configuration
 APP_UID=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.metadata.uid}')
 assert $? "Failed getting APP_UID"
-assert_non_empty APP_UID ${APP_UID}
+assert_var_not_empty APP_UID
 
 APP_API_VERSION=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" --output=jsonpath='{.apiVersion}') # app.k8s.io/v1alpha1
 assert $? "Failed getting APP_API_VERSION"
-assert_non_empty APP_API_VERSION ${APP_API_VERSION}
+assert_var_not_empty APP_API_VERSION
 
-# sed is fragile - switch to env_subst as soon as storageclass and secret are supported there
+# sed is fragile - switch to env_subst as soon as storageclass and secret are supported in the Marketplace
 YAML_FILE=${DEPLOYDIR}/storageclass.yaml
 # TODO: Convert YAML update to function
 
@@ -156,3 +154,4 @@ echo "Deployment completed"
 while [ "$KEEP_ALIVE" = true ]; do
     sleep 1
 done
+

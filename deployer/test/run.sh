@@ -3,6 +3,7 @@
 MYNAME=$(basename $0)
 MYPATH=$(dirname $0)
 . $MYPATH/../functions.sh
+. $MYPATH/../validators.sh
 
 OPTS=$(getopt -o e:n: -n $MYNAME -- "$@")
 if [ $? != 0 ] ; then
@@ -21,18 +22,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-function check_arg () {
-    local VAR_NAME=$1
-    local VAR_VAL=${!VAR_NAME}
-
-    if [ -z "$VAR_VAL" ]; then
-        logme "$(basename $0) - ERROR: Argument $VAR_NAME is not initialized"
-        exit 2
-    fi
-}
-
-check_arg EMS_ADDR
-check_arg NFS_ADDR
+assert_var_not_empty EMS_ADDR
+assert_var_not_empty NFS_ADDR
 
 logme "Configuring application CRD (Custom Resource Definition)"
 exec_cmd kubectl apply -f "$MYPATH/../config/app-crd.yaml"
@@ -45,4 +36,3 @@ logme "Starting deployer pod"
 exec_cmd kubectl create -f $MYPATH/deployer-pod.yaml
 
 logme "You should be able to monitor the pods' status via 'kubectl get pod' and 'kubectl logs <pod name>'"
-

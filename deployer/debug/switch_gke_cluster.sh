@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PROJECT=olegs-test2
+PROJECT=elastifile-gce-lab-c304
 CLUSTER=cluster-1
-ZONE=us-east1-b
+ZONE=us-central1-a
 
 if [ "$1" == "poc" ]; then
     PROJECT=launcher-poc-207208

@@ -11,7 +11,7 @@
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: fabric8-rbac
+  name: default-sa-admin-rbac
 subjects:
   - kind: ServiceAccount
     # Reference to upper's `metadata.name`

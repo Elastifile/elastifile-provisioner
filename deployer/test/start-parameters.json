@@ -1,9 +1,0 @@
-{
-    "name": "elastifile-provisioner-1",
-    "emanageAddress": "35.195.50.180",
-    "emanagePassword": "changeme",
-    "emanageUser": "admin",
-    "imageProvisioner": "docker.io/elastifileio/provisioner:defaultstorageclass",
-    "namespace": "default",
-    "nfsAddress": "35.240.100.114"
-}

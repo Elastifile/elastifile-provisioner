@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
     - name: elastifile-provisioner-deployer
-      image: gcr.io/launcher-poc-207208/elastifile-provisioner-deployer:latest
+      image: gcr.io/elastifile-gce-lab-c304/elastifile-provisioner-deployer:latest
       volumeMounts:
         - name: config-volume
           mountPath: /etc/config

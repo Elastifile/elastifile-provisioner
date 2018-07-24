@@ -16,8 +16,8 @@ NFS_ADDR=$2
 EMS_USER=admin
 EMS_PASS=changeme
 NAMESPACE=default
-#IMAGE=docker.io/elastifileio/provisioner:defaultstorageclass
-IMAGE=gcr.io/launcher-poc-207208/provisioner:defaultstorageclass
+PROJECT=$(gcloud config get-value project)
+IMAGE=gcr.io/$PROJECT/provisioner:1.0
 
 CONFIGMAP=elastifile-provisioner-deployer-config
 

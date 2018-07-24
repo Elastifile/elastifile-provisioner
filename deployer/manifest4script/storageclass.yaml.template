@@ -10,8 +10,8 @@ metadata:
     uid: $app_uid
 provisioner: elastifile.com/nfs
 parameters:
-  nfsServer: $nfsAddress
-  restURL: $emanageAddress
-  username: $emanageUser
+  nfsServer: $nfs_addr
+  restURL: $emanage_addr
+  username: $emanage_user
   secretName: "elastifile-rest"
   secretNamespace: $namespace

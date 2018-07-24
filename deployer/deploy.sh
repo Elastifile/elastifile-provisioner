@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -x
 
 # Current script name
 MYNAME=$(basename $0)
@@ -28,8 +28,10 @@ function deploy_provisioner {
         DRY_RUN_FLAG="--dry-run"
     fi
 
+    assert_exec_cmd cat ${STORAGECLASS_YAML}
+
     log_info "Creating storageclass"
-    assert_exec_cmd kubectl create -f ${DEPLOYDIR}/storageclass.yaml -n ${NAMESPACE} ${DRY_RUN_FLAG}
+    assert_exec_cmd kubectl create -f ${STORAGECLASS_YAML} -n ${NAMESPACE} ${DRY_RUN_FLAG}
 
     # TODO: Check if special characters break this
     ECFS_PASS_BASE64=$(echo -n "${ECFS_PASS}" | base64)
@@ -119,33 +121,11 @@ APP_API_VERSION=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" 
 assert $? "Failed getting APP_API_VERSION"
 assert_var_not_empty APP_API_VERSION
 
-# sed is fragile - switch to env_subst as soon as storageclass and secret are supported in the Marketplace
-YAML_FILE=${DEPLOYDIR}/storageclass.yaml
-# TODO: Convert YAML update to function
+STORAGECLASS_YAML=${DEPLOYDIR}/storageclass.yaml
+STORAGECLASS_TMPL=${STORAGECLASS_YAML}.template
 
-log_info "Setting app_uid to ${APP_UID} in ${YAML_FILE}"
-sed -ie "s/\$app_uid/$APP_UID/" ${YAML_FILE}
-
-log_info "Setting namespace to ${NAMESPACE} in ${YAML_FILE}"
-sed -ie "s/\$namespace/$NAMESPACE/" ${YAML_FILE}
-
-log_info "Setting app_api_version to ${APP_API_VERSION} in ${YAML_FILE}"
-sed -ie "s@\$app_api_version\b@$APP_API_VERSION@" ${YAML_FILE} # Special case - handle forwards slashes
-
-log_info "Setting name to ${APP_NAME} in ${YAML_FILE}"
-sed -ie "s/\$name\b/$APP_NAME/" ${YAML_FILE}
-
-log_info "Setting app_uid to ${APP_UID} in ${YAML_FILE}"
-sed -ie "s/\$app_uid/$APP_UID/" ${YAML_FILE}
-
-log_info "Setting nfsServer to ${NFS_ADDR} in ${YAML_FILE}"
-sed -ie "s/^\\(\s*nfsServer:\s*\\).*/\\1\"$NFS_ADDR\"/" ${YAML_FILE}
-
-# TODO: Check that the URL starts with "https://"
-log_info "Setting restURL to ${EMS_URL} in ${YAML_FILE}"
-sed -ie "s@^\\(\s*restURL:\s*\\).*@\\1\"$EMS_URL\"@" ${YAML_FILE} # Special case - handle forwards slashes
-log_info "Setting username to $ECFS_USER in ${YAML_FILE}"
-sed -ie "s/^\\(\s*username:\s*\\).*/\\1\"$ECFS_USER\"/" ${YAML_FILE}
+echo Running envsubst
+app_api_version=${APP_API_VERSION} name=${APP_NAME} app_uid=${APP_UID} namespace=${NAMESPACE} nfs_addr=${NFS_ADDR} emanage_addr=${EMS_URL} emanage_user=${ECFS_USER} envsubst < ${STORAGECLASS_TMPL} > ${STORAGECLASS_YAML}
 
 # Deploy provisioner
 deploy_provisioner
@@ -154,4 +134,3 @@ echo "Deployment completed"
 while [ "$KEEP_ALIVE" = true ]; do
     sleep 1
 done
-

@@ -3,8 +3,8 @@
 MYNAME=$(basename $0)
 MYPATH=$(dirname $0)
 
-. ${MYPATH}/../functions.sh
-. ${MYPATH}/../validators.sh
+. ${MYPATH}/functions.sh
+. ${MYPATH}/validators.sh
 
 # Defaults
 APP_TOOLS_DIR=/home/jeans/Documents/workspace/gke-repos/marketplace-k8s-app-tools
@@ -57,12 +57,11 @@ EOF
 set -x
 
 # Creating app resource
-${MYPATH}/../crd/set.sh
+${MYPATH}/crd/set.sh
 
 # Setting permissions - Failure for existing resource is ok here
-kubectl create -f ${MYPATH}/admin-pod-rbac.yaml
+kubectl create -f ${MYPATH}/test/admin-pod-rbac.yaml
 
 # Executing start.sh
 ${APP_TOOLS_DIR}/scripts/start.sh --deployer=${DEPLOYER_IMAGE} --parameters=${PARAMETERS}
 set +x
-

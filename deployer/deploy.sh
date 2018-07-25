@@ -22,11 +22,6 @@ function get_file_conf {
 
 function deploy_provisioner {
     log_info "Deploying ECFS provisioner"
-    DRY_RUN_FLAG=""
-    if [ "$DRY_RUN" = true ]; then
-        log_info "WARNING: DRY RUN"
-        DRY_RUN_FLAG="--dry-run"
-    fi
 
     assert_exec_cmd cat ${STORAGECLASS_YAML}
 
@@ -56,9 +51,55 @@ function deploy_provisioner {
 END_OF_SECRET_MANIFEST
 }
 
+function test_provisioner {
+    log_info "Testing ECFS provisioner"
+
+    local pvc_name="test-pvc-"$RANDOM
+    local timeout=120 # Seconds
+    local sample_interval=3 # Seconds
+    local expected_status="Bound"
+    local success=false
+
+    log_info "Creating PVC $pvc_name"
+    PVC_TMPL=${DEPLOYDIR}/test-pvc.yaml.template
+    PVC_NAME=${pvc_name} envsubst < ${PVC_TMPL} | kubectl create -f - ${DRY_RUN_FLAG}
+
+    log_info "Monitoring PVC status - $pvc_name"
+    local start_time=$(date +%s)
+    local sample_time=$(date +%s)
+    while [ 1 ]; do
+        res=$(kubectl get pvc ${pvc_name} -o jsonpath='{.status.phase}')
+        if [ "$res"x == "${expected_status}"x ]; then
+            log_info "PVC ${pvc_name} achieved the expected status: ${expected_status}"
+            success=true
+            break
+        fi
+
+        sample_time=$(date +%s)
+        local waited=$((sample_time-start_time))
+        if [ ${waited} -gt ${timeout} ]; then
+            log_error "Timed out waiting for PVC ${pvc_name} to become '${expected_status}' after ${waited}s"
+            break
+        fi
+
+        sleep ${sample_interval}
+    done
+
+    log_info "Deleting PVC ${pvc_name}"
+    assert_exec_cmd kubectl delete pvc ${pvc_name}
+
+    if [ "${success}" != true ]; then
+        log_error "Deployment verification failed"
+        exit 1
+    else
+        log_error "Deployment verification passed"
+    fi
+}
+
 # Parse command line arguments
 DRY_RUN=false
 KEEP_ALIVE=false
+TEST_PROVISIONER=true
 OPTS=$(getopt -o nk -n ${MYNAME} -- "$@")
 if [ $? != 0 ] ; then
     log_error "Failed parsing command line arguments"
@@ -71,6 +112,8 @@ while true; do
     -n) DRY_RUN=true
         shift ;;
     -k) KEEP_ALIVE=true
+        shift ;;
+    -T) TEST_PROVISIONER=false
         shift ;;
     *) break ;;
   esac
@@ -121,6 +164,12 @@ APP_API_VERSION=$(kubectl get "applications/$APP_NAME" --namespace="$NAMESPACE" 
 assert $? "Failed getting APP_API_VERSION"
 assert_var_not_empty APP_API_VERSION
 
+DRY_RUN_FLAG=""
+if [ "$DRY_RUN" = true ]; then
+    log_info "WARNING: DRY RUN"
+    DRY_RUN_FLAG="--dry-run"
+fi
+
 STORAGECLASS_YAML=${DEPLOYDIR}/storageclass.yaml
 STORAGECLASS_TMPL=${STORAGECLASS_YAML}.template
 
@@ -129,6 +178,10 @@ app_api_version=${APP_API_VERSION} name=${APP_NAME} app_uid=${APP_UID} namespace
 
 # Deploy provisioner
 deploy_provisioner
+
+if [ "${TEST_PROVISIONER}" = true ]; then
+    test_provisioner
+fi
 
 echo "Deployment completed"
 while [ "$KEEP_ALIVE" = true ]; do

@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ${PVC_NAME}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "elastifile"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+

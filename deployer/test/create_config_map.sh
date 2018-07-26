@@ -4,11 +4,11 @@ MYPATH=$(dirname $0)
 source $MYPATH/../functions.sh
 
 if [ -z "$1" ]; then
-    logme "$(basename $0) - EROR: EMS_ADDR not specified"
+    log_error "$(basename $0) - EMS_ADDR not specified"
     exit 2
 fi
 if [ -z "$2" ]; then
-    logme "$(basename $0) - EROR: NFS_ADDR not specified"
+    log_error "$(basename $0) - NFS_ADDR not specified"
     exit 2
 fi
 EMS_ADDR=$1

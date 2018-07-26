@@ -13,7 +13,7 @@ DOCKER_FILE=Dockerfile
 # Command-line arguments
 OPTS=$(getopt -o p:t:i:d: -n ${MYNAME} -- "$@")
 if [ $? != 0 ] ; then
-    logme "ERROR: Failed parsing command line arguments"
+    log_error "Failed parsing command line arguments"
     exit 2
 fi
 
@@ -34,11 +34,11 @@ done
 
 DOCKER_REPO=gcr.io/${PROJECT}
 IMAGE_TAGGED=${DOCKER_REPO}/${IMAGE}:${TAG}
-logme "Building "${DOCKER_FILE}" and tagging the image as ${IMAGE_TAGGED}"
+log_info "Building "${DOCKER_FILE}" and tagging the image as ${IMAGE_TAGGED}"
 assert_exec_cmd docker build -t ${IMAGE_TAGGED} . -f ${DOCKER_FILE}
-logme Pushing ${IMAGE_TAGGED}
+log_info "Pushing ${IMAGE_TAGGED}"
 assert_exec_cmd docker push ${IMAGE_TAGGED}
-logme Listing available images
+log_info "Listing available images"
 assert_exec_cmd gcloud container images list --repository=${DOCKER_REPO}
 
 echo In order to free up the disk space:

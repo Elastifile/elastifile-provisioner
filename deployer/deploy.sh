@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Current script name
 MYNAME=$(basename $0)

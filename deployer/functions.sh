@@ -2,7 +2,7 @@
 
 function logme {
     local msg=$*
-    echo $(date '+%Y-%m-%d %H:%M:%S') === $msg
+    echo $(date '+%Y-%m-%d %H:%M:%S') $msg
     local topic="script"
     if [ -n "${MYNAME}" ]; then
         topic=${MYNAME}
@@ -10,23 +10,27 @@ function logme {
     logger -t ${topic} "$msg"
 }
 
-function log_info {
-    logme "INFO: $*"
-}
-
 function log_error {
     logme "ERROR: $*"
 }
 
+function log_info {
+    logme "INFO:  $*"
+}
+
+function log_debug {
+    logme "DEBUG: $*"
+}
+
 function exec_cmd {
     local cmd=$@
-    logme "Executing: ${cmd}"
+    log_info "Executing: ${cmd}"
     ${cmd}
     local res=$?
     if ((res != 0)); then
-        logme "Command execution failed with exit code: ${res}"
+        log_info "Command execution failed with exit code: ${res}"
     else
-        logme Command executed successfully
+        log_info "Command executed successfully"
     fi
     return ${res}
 }

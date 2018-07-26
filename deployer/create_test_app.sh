@@ -21,7 +21,7 @@ APP_NAME='test-prov-1'
 
 OPTS=$(getopt -o e:n:m:t:s:a:u:p: -n ${MYNAME} -- "$@")
 if [ $? != 0 ] ; then
-    logme "ERROR: Failed parsing command line arguments"
+    log_error "Failed parsing command line arguments"
     exit 2
 fi
 

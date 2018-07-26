@@ -1,3 +1,7 @@
-Run make.sh <project name>
-Edit test/create_app.sh and update the relevant values in --parameters
-Run test/create_app.sh
+Run
+    git fetch
+    git pull
+    git submodule init
+    git submodule update
+    make.sh
+    create_test_app.sh # And pass proper arguments, namely -e, -n, -u, -p

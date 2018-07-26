@@ -2,12 +2,12 @@
 
 MYNAME=$(basename $0)
 MYPATH=$(dirname $0)
+APP_TOOLS_DIR=${MYPATH}/marketplace-k8s-app-tools
 
 . ${MYPATH}/functions.sh
 . ${MYPATH}/validators.sh
 
 # Defaults
-APP_TOOLS_DIR=/home/jeans/Documents/workspace/gke-repos/marketplace-k8s-app-tools
 PROJECT=$(gcloud config get-value project)
 DOCKER_REPO=gcr.io/${PROJECT}
 TAG=1.0
@@ -55,7 +55,6 @@ IFS='' read -r -d '' PARAMETERS <<EOF
 EOF
 
 set -x
-
 # Creating app resource
 ${MYPATH}/crd/set.sh
 

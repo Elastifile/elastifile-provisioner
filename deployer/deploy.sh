@@ -96,6 +96,12 @@ function test_provisioner {
     fi
 }
 
+function ensure_https_proto {
+    local url=$1
+    local url=https://$(echo ${url} | sed -e 's#^[^/]*://##')
+    echo ${url}
+}
+
 # Parse command line arguments
 DRY_RUN=false
 KEEP_ALIVE=false
@@ -131,13 +137,12 @@ assert_var_not_empty NAMESPACE
 NFS_ADDR=$(get_file_conf nfsAddress)
 assert $? "Failed getting nfsAddress"
 assert_var_not_empty NFS_ADDR
-# TODO: Rename emanageAddress to emanageUrl
 
 EMS_URL=$(get_file_conf emanageAddress)
 assert $? "Failed getting emanageAddress"
 assert_var_not_empty EMS_URL
-validate_https ${EMS_URL}
-assert $? "Management URL should start with HTTPS:// - received ${EMS_URL}"
+EMS_URL=$(ensure_https_proto ${EMS_URL})
+log_info "Using management URL: ${EMS_URL}"
 
 ECFS_USER=$(get_file_conf emanageUser)
 assert $? "Failed getting emanageUser"
